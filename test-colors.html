@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Test</title>
+    <style>
+        :root {
+            --primary: #137fec;
+            --background-light: #f6f7f8;
+            --background-dark: #101922;
+            --foreground-light: #111418;
+            --foreground-dark: #f0f2f4;
+            --card-light: #ffffff;
+            --card-dark: #1a2530;
+            --subtle-light: #617589;
+            --subtle-dark: #a0b3c6;
+            --border-light: #e1e5ea;
+            --border-dark: #2a3745;
+            --success-light: #10b981;
+            --success-dark: #34d399;
+            --warning-light: #f59e0b;
+            --warning-dark: #fbbf24;
+            --danger-light: #ef4444;
+            --danger-dark: #f87171;
+        }
+
+        .dark {
+            --background: var(--background-dark);
+            --foreground: var(--foreground-dark);
+            --card: var(--card-dark);
+            --subtle: var(--subtle-dark);
+            --border: var(--border-dark);
+            --success: var(--success-dark);
+            --warning: var(--warning-dark);
+            --danger: var(--danger-dark);
+        }
+
+        body {
+            background: var(--background-light);
+            color: var(--foreground-light);
+            font-family: Inter, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        body.dark {
+            background: var(--background-dark);
+            color: var(--foreground-dark);
+        }
+
+        .color-box {
+            display: inline-block;
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            text-align: center;
+        }
+
+        .primary { background: var(--primary); color: white; }
+        .background { background: var(--background); }
+        .foreground { background: var(--foreground); color: white; }
+        .card { background: var(--card); border: 2px solid var(--border); }
+        .subtle { background: var(--subtle); color: white; }
+        .success { background: var(--success); color: white; }
+        .warning { background: var(--warning); color: white; }
+        .danger { background: var(--danger); color: white; }
+    </style>
+</head>
+<body>
+    <h1>WIO Color System Test</h1>
+    <button onclick="toggleDarkMode()">Toggle Dark Mode</button>
+    <p>Current mode: <span id="mode">Light</span></p>
+    
+    <div class="color-box primary">Primary</div>
+    <div class="color-box background">Background</div>
+    <div class="color-box foreground">Foreground</div>
+    <div class="color-box card">Card</div>
+    <div class="color-box subtle">Subtle</div>
+    <div class="color-box success">Success</div>
+    <div class="color-box warning">Warning</div>
+    <div class="color-box danger">Danger</div>
+
+    <script>
+        function toggleDarkMode() {
+            document.body.classList.toggle('dark');
+            document.getElementById('mode').textContent = document.body.classList.contains('dark') ? 'Dark' : 'Light';
+        }
+
+        // Set initial mode based on system preference
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+            document.body.classList.add('dark');
+            document.getElementById('mode').textContent = 'Dark';
+        }
+    </script>
+</body>
+</html>
