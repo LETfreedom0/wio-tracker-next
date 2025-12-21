@@ -7,6 +7,12 @@ import Navigation from '../components/Navigation';
 import { useLanguage } from '../context/LanguageContext';
 import { XMarkIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
 
+const DISPOSABLE_DOMAINS = [
+  'tempmail.com', 'throwawaymail.com', 'mailinator.com', 'guerrillamail.com', 
+  'yopmail.com', '10minutemail.com', 'sharklasers.com', 'getnada.com',
+  'dispostable.com', 'grr.la', 'temp-mail.org', 'temp-mail.ru'
+];
+
 export default function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -14,6 +20,10 @@ export default function Login() {
   const [isSignUp, setIsSignUp] = useState(false);
   const [isForgotPassword, setIsForgotPassword] = useState(false);
   const [message, setMessage] = useState('');
+  // 蜜罐字段，用于防止简单的机器人注册 / Honeypot field to prevent simple bot registration
+  const [honeyPot, setHoneyPot] = useState('');
+  // 记录页面加载时间，用于防止快速提交 / Record page load time to prevent rapid submission
+  const [mountTime, setMountTime] = useState(0);
   
   // 密码验证状态
   const [passwordCriteria, setPasswordCriteria] = useState({
@@ -26,7 +36,12 @@ export default function Login() {
   const router = useRouter();
   const { t } = useLanguage();
 
-  // 监听密码变化，实时验证
+  // 记录页面加载时间 / Record page load time
+  useEffect(() => {
+    setMountTime(Date.now());
+  }, []);
+
+  // 监听密码变化，实时验证 / Monitor password changes for validation
   useEffect(() => {
     if (isSignUp) {
       if (password) {
@@ -60,11 +75,48 @@ export default function Login() {
   };
 
   /**
+   * 伪装成功函数
+   * Fake success function to fool bots
+   */
+  const fakeSuccess = () => {
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+      setMessage(isSignUp ? t('register_success') : (isForgotPassword ? t('reset_email_sent') : ''));
+    }, 1000 + Math.random() * 1000); // Random delay
+  };
+
+  /**
    * 处理认证逻辑（登录、注册、重置密码）
    * Handle authentication logic (Login, Register, Reset Password)
    */
   const handleAuth = async (e) => {
     e.preventDefault();
+
+    // 蜜罐检查：如果蜜罐字段有值，说明是机器人 / Honeypot check
+    if (honeyPot) {
+      console.log('Bot detected via honeypot');
+      // 伪装成功，防止机器人尝试其他方式 / Fake success
+      fakeSuccess();
+      return;
+    }
+
+    // 时间检查：如果提交速度过快（小于2秒），可能是脚本 / Time check
+    // 正常用户填写表单通常需要超过2秒
+    if (Date.now() - mountTime < 2000) {
+      console.log('Bot detected via rapid submission');
+      fakeSuccess();
+      return;
+    }
+
+    // 临时邮箱检查 / Disposable email check
+    const emailDomain = email.split('@')[1];
+    if (emailDomain && DISPOSABLE_DOMAINS.includes(emailDomain.toLowerCase())) {
+       setMessage(t('invalid_email_domain') || 'Please use a valid email address from a reputable provider.');
+       setLoading(false);
+       return;
+    }
+
     setLoading(true);
     setMessage('');
 
@@ -101,10 +153,20 @@ export default function Login() {
       }
     } catch (error) {
       console.error('Login Error:', error);
-      if (error.message && (error.message.includes('Invalid API key') || error.message.includes('service_role'))) {
-        setMessage('系统配置错误：Supabase API Key 无效。请检查 Vercel 环境变量设置。');
+      
+      // 处理 Supabase 特定的错误 / Handle specific Supabase errors
+      if (error.name === 'AuthApiError' || error.name === 'AuthUnknownError') {
+         if (error.message === 'Invalid login credentials') {
+           setMessage(t('invalid_credentials'));
+         } else {
+           setMessage(error.message);
+         }
+      } else if (error.message && (error.message.includes('Invalid API key') || error.message.includes('service_role'))) {
+        setMessage(t('system_config_error'));
+      } else if (error.message && error.message.includes('fetch')) {
+        setMessage(t('network_error'));
       } else {
-        setMessage(error.message);
+        setMessage(error.message || t('unexpected_error'));
       }
     } finally {
       setLoading(false);
@@ -127,6 +189,19 @@ export default function Login() {
             </h2>
           </div>
           <form className="mt-8 space-y-6" onSubmit={handleAuth}>
+            {/* Honeypot field - hidden from real users */}
+            <div className="opacity-0 absolute -z-10 h-0 w-0 overflow-hidden" aria-hidden="true">
+              <label htmlFor="website_hp">Website</label>
+              <input
+                id="website_hp"
+                type="text"
+                name="website_hp"
+                value={honeyPot}
+                onChange={(e) => setHoneyPot(e.target.value)}
+                tabIndex="-1"
+                autoComplete="off"
+              />
+            </div>
             <div className="rounded-md shadow-sm -space-y-px">
               <div className="relative">
                 <input

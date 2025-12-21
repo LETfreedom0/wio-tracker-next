@@ -26,6 +26,11 @@ export const zh = {
   password_too_short: '密码长度至少为8位。',
   password_no_number: '密码必须包含至少一个数字。',
   password_no_letter: '密码必须包含至少一个字母。',
+  invalid_credentials: '账号或密码错误，请重新输入。',
+  invalid_email_domain: '请使用常见邮箱服务商的邮箱地址。',
+  system_config_error: '系统配置错误：Supabase API Key 无效。请检查 Vercel 环境变量设置。',
+  network_error: '网络连接错误，请检查您的网络设置或是否开启了代理。',
+  unexpected_error: '发生意外错误。',
 
   // Settings
   settings_title: '设置',

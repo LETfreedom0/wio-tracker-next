@@ -26,6 +26,11 @@ export const en = {
   password_too_short: 'Password must be at least 8 characters.',
   password_no_number: 'Password must contain at least one number.',
   password_no_letter: 'Password must contain at least one letter.',
+  invalid_credentials: 'Invalid email or password. Please try again.',
+  invalid_email_domain: 'Please use a valid email address from a reputable provider.',
+  system_config_error: 'System configuration error: Invalid Supabase API Key. Please check Vercel environment variables.',
+  network_error: 'Network connection error. Please check your network settings or proxy.',
+  unexpected_error: 'An unexpected error occurred.',
 
   // Settings
   settings_title: 'Settings',
