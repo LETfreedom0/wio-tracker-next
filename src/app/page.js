@@ -1,65 +1,11 @@
 'use client';
 
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import Navigation from './components/Navigation';
 import { supabase } from '../lib/supabaseClient';
 import { useLanguage } from './context/LanguageContext';
-
-// 状态映射表
-const STATUS_CODES = {
-  NONE: 0,
-  OFFICE: 1,
-  REMOTE: 2,
-  ANNUAL_LEAVE: 3,
-  SICK_LEAVE: 4,
-  UNPAID_LEAVE: 5
-};
-
-const CODE_TO_KEY = {
-  0: 'none',
-  1: 'office',
-  2: 'remote',
-  3: 'annual_leave',
-  4: 'sick_leave',
-  5: 'unpaid_leave'
-};
-
-const KEY_TO_CODE = Object.entries(CODE_TO_KEY).reduce((acc, [k, v]) => {
-  acc[v] = Number(k);
-  return acc;
-}, {});
-
-// Helper to decode status from DB integer to { am, pm } keys
-const decodeStatus = (statusInt) => {
-  if (statusInt === null || statusInt === undefined) return { am: 'none', pm: 'none' };
-  
-  // Legacy/Simple status (0-99)
-  if (statusInt < 100) {
-    const key = CODE_TO_KEY[statusInt] || 'none';
-    return { am: key, pm: key };
-  }
-  
-  // Combined status (100 + am*10 + pm)
-  const val = statusInt - 100;
-  const amCode = Math.floor(val / 10);
-  const pmCode = val % 10;
-  return {
-    am: CODE_TO_KEY[amCode] || 'none',
-    pm: CODE_TO_KEY[pmCode] || 'none'
-  };
-};
-
-// Helper to encode { am, pm } keys to DB integer
-const encodeStatus = (amKey, pmKey) => {
-  const am = KEY_TO_CODE[amKey] || 0;
-  const pm = KEY_TO_CODE[pmKey] || 0;
-  
-  if (am === pm) {
-    return am;
-  }
-  
-  return 100 + am * 10 + pm;
-};
+import { STATUS_CODES, CODE_TO_KEY, KEY_TO_CODE, decodeStatus, encodeStatus } from '../lib/constants';
+import { getHolidayData } from '../lib/holidays';
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -68,6 +14,9 @@ export default function Home() {
   const [wioTarget, setWioTarget] = useState(80);
   const [annualQuota, setAnnualQuota] = useState(0);
   const [sickQuota, setSickQuota] = useState(0);
+  const [publicHolidays, setPublicHolidays] = useState({});
+  const [country, setCountry] = useState('');
+  // publicHolidayQuota removed from state
   const [selectedLegend, setSelectedLegend] = useState(null);
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -138,6 +87,9 @@ export default function Home() {
     if (savedAnnual) setAnnualQuota(Number(savedAnnual));
     const savedSick = localStorage.getItem('sickLeaveQuota');
     if (savedSick) setSickQuota(Number(savedSick));
+    // publicHolidayQuota removed from local storage load
+    const savedCountry = localStorage.getItem('country');
+    if (savedCountry) setCountry(savedCountry);
   };
 
   /**
@@ -174,11 +126,15 @@ export default function Home() {
         setWioTarget(settingsData.wio_target);
         setAnnualQuota(settingsData.annual_leave_quota || 0);
         setSickQuota(settingsData.sick_leave_quota || 0);
+        // publicHolidayQuota removed from DB load
+        if (settingsData.country) setCountry(settingsData.country);
         
         // Sync quotas to local
         localStorage.setItem('annualLeaveQuota', settingsData.annual_leave_quota || 0);
         localStorage.setItem('sickLeaveQuota', settingsData.sick_leave_quota || 0);
+        // publicHolidayQuota removed from local storage sync
         localStorage.setItem('wioTarget', settingsData.wio_target);
+        if (settingsData.country) localStorage.setItem('country', settingsData.country);
       }
 
       // 处理日历数据
@@ -190,7 +146,8 @@ export default function Home() {
         calendarDataDB.forEach(record => {
           // 格式化日期 Key 以匹配前端逻辑 (去除前导零)
           const [y, m, d] = record.date.split('-');
-          const dateKey = `${parseInt(y)}-${parseInt(m)}-${parseInt(d)}`;
+          // 注意：Supabase 中存的 m 是 1-12，前端 Key 中用的 m 是 0-11
+          const dateKey = `${parseInt(y)}-${parseInt(m) - 1}-${parseInt(d)}`;
 
           let status = record.status;
           
@@ -226,6 +183,41 @@ export default function Home() {
     }
   };
 
+  // Load public holidays when country changes
+  useEffect(() => {
+    if (!country) return;
+
+    const fetchHolidays = async () => {
+      const currentYear = new Date().getFullYear();
+      const years = [currentYear - 1, currentYear, currentYear + 1];
+      let allHolidays = {};
+
+      await Promise.all(years.map(async (year) => {
+        const holidays = await getHolidayData(country, year);
+        if (holidays) {
+            holidays.forEach(h => {
+                let dateStr = h.date;
+                 if (typeof dateStr !== 'string') {
+                       try {
+                           dateStr = dateStr.toISOString().split('T')[0];
+                       } catch (e) {
+                           return;
+                       }
+                 } else {
+                       dateStr = dateStr.split(' ')[0];
+                 }
+                 const [y, m, d] = dateStr.split('-').map(Number);
+                 const dateKey = `${y}-${m - 1}-${d}`;
+                 allHolidays[dateKey] = h;
+            });
+        }
+      }));
+      setPublicHolidays(prev => ({ ...prev, ...allHolidays }));
+    };
+
+    fetchHolidays();
+  }, [country]);
+
   // 获取当前月份的天数
   const getDaysInMonth = (date) => {
     return new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
@@ -237,10 +229,24 @@ export default function Home() {
   };
 
   // 获取日期状态
-  const getDateStatus = (day) => {
+  const getDateStatus = useCallback((day) => {
+    // 构造 Key 必须和设置页面生成假期时一致: YYYY-M-D
+    // currentDate.getMonth() 返回 0-11，刚好符合
     const dateKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}-${day}`;
-    return attendanceData[dateKey] || { am: 'none', pm: 'none' };
-  };
+    const userStatus = attendanceData[dateKey];
+
+    // 如果用户有显式设置（且不是 public_holiday），则优先显示用户设置
+    if (userStatus && userStatus.am !== 'none' && userStatus.am !== 'public_holiday') {
+        return userStatus;
+    }
+
+    // 检查公共假期
+    if (publicHolidays[dateKey]) {
+        return { am: 'public_holiday', pm: 'public_holiday', name: publicHolidays[dateKey].name };
+    }
+    
+    return { am: 'none', pm: 'none' };
+  }, [currentDate, attendanceData, publicHolidays]);
 
   // 获取加班状态
   const getOtStatus = (day) => {
@@ -294,7 +300,7 @@ export default function Home() {
       return;
     }
 
-    const statuses = ['none', 'office', 'remote', 'annual_leave', 'sick_leave', 'unpaid_leave'];
+    const statuses = ['none', 'office', 'remote', 'annual_leave', 'sick_leave', 'unpaid_leave', 'compensatory_leave', 'public_holiday'];
     const currentStatus = attendanceData[dateKey] || { am: 'none', pm: 'none' };
     
     let currentIndex = -1;
@@ -323,11 +329,17 @@ export default function Home() {
     if (!user) return;
     try {
       const statusInt = encodeStatus(statusObj.am, statusObj.pm);
+      
+      // 转换 dateKey (YYYY-M-D) 到 DB 格式 (YYYY-MM-DD)
+      const [y, m, d] = dateKey.split('-').map(Number);
+      // m 是 0-11，需要加 1
+      const dbDate = `${y}-${String(m + 1).padStart(2, '0')}-${String(d).padStart(2, '0')}`;
+
       const { error } = await supabase
         .from('calendar_data')
         .upsert({
           user_id: user.id,
-          date: dateKey,
+          date: dbDate,
           status: statusInt,
           ot: otVal ? Math.round(otVal) : 0,
           updated_at: new Date().toISOString()
@@ -355,8 +367,18 @@ export default function Home() {
   const handleOtSave = () => {
     if (!currentOtDate) return;
     const dateKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}-${currentOtDate}`;
-    const duration = parseFloat(otDurationInput);
+    let duration = parseFloat(otDurationInput);
     
+    // Calculate max duration based on weekday/weekend
+    const targetDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentOtDate);
+    const dayOfWeek = targetDate.getDay();
+    const isWeekend = dayOfWeek === 0 || dayOfWeek === 6;
+    const maxDuration = isWeekend ? 24 : 16;
+
+    if (duration > maxDuration) {
+        duration = maxDuration;
+    }
+
     let newOtData = { ...otData };
     let finalDuration = 0;
 
@@ -390,17 +412,21 @@ export default function Home() {
           case 'annual_leave': return 'bg-warning/20 text-warning font-medium';
           case 'sick_leave': return 'bg-sick/20 text-sick font-medium';
           case 'unpaid_leave': return 'bg-unpaid/20 text-unpaid font-medium';
+          case 'compensatory_leave': return 'bg-compensatory/20 text-compensatory font-medium';
+          case 'public_holiday': return 'bg-rose-500/20 text-rose-600 font-medium'; // New Public Holiday style
           default: return 'text-subtle hover:bg-primary/10';
         }
     };
     
     const getGradientColor = (status) => {
         switch (status) {
-          case 'office': return 'rgba(34, 197, 94, 0.2)';
-          case 'remote': return 'rgba(59, 130, 246, 0.2)';
-          case 'annual_leave': return 'rgba(234, 179, 8, 0.2)';
-          case 'sick_leave': return 'rgba(168, 85, 247, 0.2)'; // Matches --sick (#a855f7)
-          case 'unpaid_leave': return 'rgba(107, 114, 128, 0.2)';
+          case 'office': return 'rgba(34, 197, 94, 0.2)'; // #22c55e (Green-500)
+          case 'remote': return 'rgba(59, 130, 246, 0.2)'; // #3b82f6 (Blue-500)
+          case 'annual_leave': return 'rgba(249, 115, 22, 0.2)'; // #f97316 (Orange-500)
+          case 'sick_leave': return 'rgba(168, 85, 247, 0.2)'; // #a855f7 (Purple-500)
+          case 'unpaid_leave': return 'rgba(100, 116, 139, 0.2)'; // #64748b (Slate-500)
+          case 'compensatory_leave': return 'rgba(6, 182, 212, 0.2)'; // #06b6d4 (Cyan-500)
+          case 'public_holiday': return 'rgba(225, 29, 72, 0.2)'; // #e11d48 (Rose-600)
           default: return 'transparent';
         }
     };
@@ -435,13 +461,13 @@ export default function Home() {
         const { am, pm } = getDateStatus(day);
         
         // AM
-        if (am !== 'annual_leave' && am !== 'sick_leave' && am !== 'unpaid_leave') {
+        if (am !== 'annual_leave' && am !== 'sick_leave' && am !== 'unpaid_leave' && am !== 'public_holiday') {
             totalWorkingDays += 0.5;
             if (am === 'office') officeDays += 0.5;
         }
 
         // PM
-        if (pm !== 'annual_leave' && pm !== 'sick_leave' && pm !== 'unpaid_leave') {
+        if (pm !== 'annual_leave' && pm !== 'sick_leave' && pm !== 'unpaid_leave' && pm !== 'public_holiday') {
             totalWorkingDays += 0.5;
             if (pm === 'office') officeDays += 0.5;
         }
@@ -455,11 +481,17 @@ export default function Home() {
   const leaveStats = useMemo(() => {
     let annualUsed = 0;
     let sickUsed = 0;
+    let publicHolidaysUsed = 0; // Track used public holidays (past/today)
+    let publicHolidaysTotal = 0; // Track total public holidays in current year
     const currentYear = currentDate.getFullYear();
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
     
+    // 1. 统计用户手动记录 (Attendance)
     Object.entries(attendanceData).forEach(([key, statusObj]) => {
-        const [y] = key.split('-');
-        if (parseInt(y) === currentYear) {
+        const [y, m, d] = key.split('-').map(Number);
+        
+        if (y === currentYear) {
             const { am, pm } = statusObj;
             if (am === 'annual_leave') annualUsed += 0.5;
             if (pm === 'annual_leave') annualUsed += 0.5;
@@ -468,9 +500,33 @@ export default function Home() {
             if (pm === 'sick_leave') sickUsed += 0.5;
         }
     });
+
+    // 2. 统计公共假期 (Public Holidays)
+    Object.entries(publicHolidays).forEach(([key, holiday]) => {
+        const [y, m, d] = key.split('-').map(Number);
+        
+        if (y === currentYear) {
+             // 检查这一天是否被用户覆盖
+             const userRecord = attendanceData[key];
+             // 如果用户覆盖了（比如 Office/Remote/AnnualLeave），则不算公共假期消耗
+             // 注意：如果用户请了年假覆盖公共假期，这通常不合理（通常会延长年假），但按逻辑这里就不算公共假期了，算年假（上面已经统计了）
+             const isOverridden = userRecord && 
+                                  userRecord.am !== 'none' && 
+                                  userRecord.am !== 'public_holiday'; 
+             
+             if (!isOverridden) {
+                 publicHolidaysTotal += 1; // 假设公共假期都是全天
+
+                 const recordDate = new Date(y, m, d);
+                 if (recordDate <= now) {
+                     publicHolidaysUsed += 1;
+                 }
+             }
+        }
+    });
     
-    return { annualUsed, sickUsed };
-  }, [attendanceData, currentDate]);
+    return { annualUsed, sickUsed, publicHolidaysUsed, publicHolidaysTotal };
+  }, [attendanceData, publicHolidays, currentDate]);
 
   // 计算 OT 统计
   const otStats = useMemo(() => {
@@ -608,6 +664,16 @@ export default function Home() {
                   const isToday = day === today;
 
                   const { className: statusClass, style: statusStyle } = getStatusStyle(status);
+                  
+                  // Check if it is a public holiday and if it is in the future (or today)
+                  // Use currentDate context to build full date object
+                  const cellDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+                  const now = new Date();
+                  now.setHours(0, 0, 0, 0); // Reset time part for accurate comparison
+                  
+                  const isFutureOrToday = cellDate >= now;
+                  const isPublicHoliday = status.am === 'public_holiday' && status.pm === 'public_holiday';
+                  const holidayName = status.name;
 
                   return (
                     <button
@@ -615,9 +681,22 @@ export default function Home() {
                       onClick={() => toggleDateStatus(day)}
                       onContextMenu={(e) => toggleOtStatus(day, e)}
                       style={statusStyle}
-                      className={`h-10 sm:h-12 w-full flex items-center justify-center rounded-full transition-colors relative ${statusClass} ${isToday ? 'ring-2 ring-primary/50' : ''}`}
+                      className={`h-10 sm:h-12 w-full flex flex-col items-center justify-center rounded-lg transition-colors relative ${statusClass} ${isToday ? 'ring-2 ring-primary/50' : ''}`}
                     >
-                      {isToday ? t('today') : day}
+                      <span className={`leading-none ${isPublicHoliday && isFutureOrToday && holidayName ? 'text-xs font-bold mb-0.5' : 'text-sm'}`}>
+                        {isToday ? t('today') : day}
+                      </span>
+                      
+                      {/* Holiday Name Display */}
+                      {isPublicHoliday && isFutureOrToday && holidayName && (
+                          <span 
+                            className="text-[10px] leading-none truncate w-full px-0.5 text-rose-700 font-bold opacity-90 transform scale-90 sm:scale-100 origin-center"
+                            title={holidayName}
+                          >
+                              {holidayName}
+                          </span>
+                      )}
+                      
                       {isOt && (
                         <span className="absolute top-0 right-0 flex h-4 w-4 items-center justify-center rounded-full bg-danger text-[10px] text-white ring-2 ring-card shadow-sm" title={`${t('ot')} ${otDuration} ${t('hours')}`}>
                           {otDuration}
@@ -664,8 +743,10 @@ export default function Home() {
                     { key: 'office', label: t('office'), className: 'bg-success/20 border-success' },
                     { key: 'remote', label: t('remote'), className: 'bg-primary/20 border-primary' },
                     { key: 'annual_leave', label: t('annual_leave'), className: 'bg-warning/20 border-warning' },
+                    { key: 'compensatory_leave', label: t('compensatory_leave'), className: 'bg-compensatory/20 border-compensatory' },
                     { key: 'sick_leave', label: t('sick_leave'), className: 'bg-sick/20 border-sick' },
                     { key: 'unpaid_leave', label: t('unpaid_leave'), className: 'bg-unpaid/20 border-unpaid' },
+                    { key: 'public_holiday', label: t('public_holiday'), className: 'bg-rose-500/20 border-rose-600' },
                     { key: 'none', label: t('clear'), className: 'border-dashed border-subtle' }
                   ].map(item => (
                     <div 
@@ -692,12 +773,6 @@ export default function Home() {
                     <span>{t('ot')}</span>
                   </div>
 
-                  <div className="flex items-center gap-2 py-1.5 px-2">
-                    <div className="size-4 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">今</div>
-                    <span>{t('today')}</span>
-                  </div>
-
-                  {/* Combined Legend Button */}
                   <div 
                     onClick={() => {
                         setShowCombinedConfig(!showCombinedConfig);
@@ -714,6 +789,11 @@ export default function Home() {
                     <span>{t('custom')}</span>
                   </div>
 
+                  <div className="flex items-center gap-2 py-1.5 px-2">
+                    <div className="size-4 rounded-full bg-primary text-white flex items-center justify-center text-xs font-bold">今</div>
+                    <span>{t('today')}</span>
+                  </div>
+
                   {/* Combined Config Panel */}
                   {showCombinedConfig && (
                     <div className="w-full mt-4 p-4 border border-border rounded-md bg-card/50">
@@ -726,8 +806,10 @@ export default function Home() {
                                             { key: 'office', label: t('office_short'), color: 'bg-success/20' },
                                             { key: 'remote', label: t('remote_short'), color: 'bg-primary/20' },
                                             { key: 'annual_leave', label: t('annual_leave_short'), color: 'bg-warning/20' },
+                                            { key: 'compensatory_leave', label: t('compensatory_leave_short'), color: 'bg-compensatory/20' },
                                             { key: 'sick_leave', label: t('sick_leave_short'), color: 'bg-sick/20' },
                                             { key: 'unpaid_leave', label: t('unpaid_leave_short'), color: 'bg-unpaid/20' },
+                                            { key: 'public_holiday', label: t('public_holiday_short'), color: 'bg-rose-500/20' },
                                             { key: 'none', label: t('none'), color: 'border border-dashed' }
                                         ].map(opt => (
                                             <div 
@@ -804,6 +886,21 @@ export default function Home() {
                   <p className="text-xs text-subtle mt-1 text-right">{t('remaining')}: {sickQuota ? sickQuota - leaveStats.sickUsed : '-'} {t('days')}</p>
                 </div>
 
+                {/* Public Holiday Stats */}
+                <div>
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-subtle">{t('public_holiday_stat') || 'Public Holidays'}</span>
+                    <span className="font-medium">{leaveStats.publicHolidaysUsed} / {leaveStats.publicHolidaysTotal} {t('days')}</span>
+                  </div>
+                   <div className="w-full bg-border rounded-full h-2">
+                    <div 
+                      className="bg-rose-500 h-2 rounded-full transition-all"
+                      style={{ width: `${leaveStats.publicHolidaysTotal ? Math.min((leaveStats.publicHolidaysUsed / leaveStats.publicHolidaysTotal) * 100, 100) : 0}%` }}
+                    ></div>
+                  </div>
+                  <p className="text-xs text-subtle mt-1 text-right">{t('remaining')}: {leaveStats.publicHolidaysTotal - leaveStats.publicHolidaysUsed} {t('days')}</p>
+                </div>
+
                 {/* OT Stats */}
                 <div className="pt-2 border-t border-border">
                    <div className="flex justify-between items-center mb-2">
@@ -843,6 +940,12 @@ export default function Home() {
                 type="number" 
                 step="0.5"
                 min="0"
+                max={(() => {
+                    if (!currentOtDate) return 24;
+                    const d = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentOtDate);
+                    const day = d.getDay();
+                    return (day === 0 || day === 6) ? 24 : 16;
+                })()}
                 value={otDurationInput}
                 onChange={(e) => setOtDurationInput(e.target.value)}
                 className="w-full p-2 rounded-lg border border-border bg-background focus:ring-2 focus:ring-primary focus:border-primary outline-none transition-all"
@@ -852,6 +955,15 @@ export default function Home() {
                   if (e.key === 'Escape') setShowOtModal(false);
                 }}
               />
+              <p className="text-xs text-subtle mt-1">
+                {(() => {
+                    if (!currentOtDate) return '';
+                    const d = new Date(currentDate.getFullYear(), currentDate.getMonth(), currentOtDate);
+                    const day = d.getDay();
+                    const isWeekend = day === 0 || day === 6;
+                    return isWeekend ? t('ot_max_weekend') : t('ot_max_workday');
+                })()}
+              </p>
             </div>
             
             <div className="flex justify-end gap-3">

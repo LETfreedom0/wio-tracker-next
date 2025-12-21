@@ -11,6 +11,16 @@ const isValidUrl = (url) => {
   }
 };
 
+// Debug configuration (will be visible in browser console or server logs)
+if (!supabaseUrl || !supabaseAnonKey) {
+  console.warn('Supabase configuration missing:', {
+    url: supabaseUrl ? 'Set' : 'Missing',
+    key: supabaseAnonKey ? 'Set' : 'Missing'
+  });
+} else if (!isValidUrl(supabaseUrl)) {
+  console.warn('Supabase URL is invalid:', supabaseUrl);
+}
+
 // 创建一个 Mock 客户端，防止因缺少配置导致应用崩溃
 const createMockClient = () => {
   const mockBuilder = {

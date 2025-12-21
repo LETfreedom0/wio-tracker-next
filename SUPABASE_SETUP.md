@@ -20,6 +20,21 @@ CREATE TABLE public.user_settings (
     -- language: 界面语言偏好
     language TEXT DEFAULT 'english',
 
+    -- username: 用户名
+    username TEXT,
+
+    -- country: 国家/地区代码
+    country TEXT,
+
+    -- membership_tier: 会员等级 (free, pro, premium)
+    membership_tier TEXT DEFAULT 'free',
+
+    -- membership_status: 会员状态 (active, expired, cancelled)
+    membership_status TEXT DEFAULT 'active',
+
+    -- membership_expires_at: 会员过期时间
+    membership_expires_at TIMESTAMP WITH TIME ZONE,
+
     -- annual_leave_quota: 年假总额度（天）
     annual_leave_quota INTEGER DEFAULT 0,
 
@@ -61,7 +76,12 @@ CREATE TABLE public.calendar_data (
 -- 添加新的额度配置列
 ALTER TABLE public.user_settings 
 ADD COLUMN IF NOT EXISTS annual_leave_quota INTEGER DEFAULT 0,
-ADD COLUMN IF NOT EXISTS sick_leave_quota INTEGER DEFAULT 0;
+ADD COLUMN IF NOT EXISTS sick_leave_quota INTEGER DEFAULT 0,
+ADD COLUMN IF NOT EXISTS username TEXT,
+ADD COLUMN IF NOT EXISTS country TEXT,
+ADD COLUMN IF NOT EXISTS membership_tier TEXT DEFAULT 'free',
+ADD COLUMN IF NOT EXISTS membership_status TEXT DEFAULT 'active',
+ADD COLUMN IF NOT EXISTS membership_expires_at TIMESTAMP WITH TIME ZONE;
 
 -- 将 status 列转换为 SMALLINT
 -- 注意：这会尝试将现有的 JSONB 数据转换为整数，如果转换失败可能会报错。
@@ -113,7 +133,45 @@ USING (auth.uid() = user_id);
 -- 注意：通常上面的分开策略就足够了。如果 upsert 仍然失败，可能是因为 upsert 操作在 RLS 中被视为 INSERT + UPDATE，需要同时满足两者的条件。
 ```
 
-### 3. 环境变量
+### 3. 自动同步用户数据 (Trigger) - 推荐
+
+为了确保 `user_settings` 表中始终有对应用户的数据，并且自动同步注册时填写的 `username` 和 `country`，建议创建一个数据库触发器。
+
+```sql
+-- 创建处理新用户的函数
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+  INSERT INTO public.user_settings (user_id, username, country, wio_target, annual_leave_quota, sick_leave_quota, language, membership_tier, membership_status)
+  VALUES (
+    new.id,
+    new.raw_user_meta_data->>'username',
+    new.raw_user_meta_data->>'country',
+    80, -- 默认 WIO 目标
+    0,  -- 默认年假额度
+    0,  -- 默认病假额度
+    'zh', -- 默认语言
+    'free', -- 默认会员等级
+    'active' -- 默认会员状态
+  )
+  ON CONFLICT (user_id) DO UPDATE SET
+    username = EXCLUDED.username,
+    country = EXCLUDED.country;
+  RETURN new;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+ 
+-- 创建触发器，当 auth.users 插入新记录时触发
+CREATE OR REPLACE TRIGGER on_auth_user_created
+  AFTER INSERT ON auth.users
+  FOR EACH ROW EXECUTE PROCEDURE public.handle_new_user();
+```
+
+### 4. 环境变量
+
+
+
+
 
 请确保您的项目根目录下的 `.env.local` 文件包含以下变量（从 Supabase 项目设置中获取）：
 
