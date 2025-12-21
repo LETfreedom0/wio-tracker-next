@@ -18,6 +18,14 @@ export const en = {
   processing: 'Processing...',
   have_account: 'Already have an account? Click to login',
   no_account: 'No account? Click to register',
+  forgot_password: 'Forgot password?',
+  reset_password_title: 'Reset Password',
+  reset_password_btn: 'Send Reset Link',
+  back_to_login: 'Back to Login',
+  reset_email_sent: 'Password reset link has been sent to your email.',
+  password_too_short: 'Password must be at least 8 characters.',
+  password_no_number: 'Password must contain at least one number.',
+  password_no_letter: 'Password must contain at least one letter.',
 
   // Settings
   settings_title: 'Settings',

@@ -18,6 +18,14 @@ export const zh = {
   processing: '处理中...',
   have_account: '已有账户？点击登录',
   no_account: '没有账户？点击注册',
+  forgot_password: '忘记密码？',
+  reset_password_title: '重置密码',
+  reset_password_btn: '发送重置链接',
+  back_to_login: '返回登录',
+  reset_email_sent: '密码重置链接已发送至您的邮箱。',
+  password_too_short: '密码长度至少为8位。',
+  password_no_number: '密码必须包含至少一个数字。',
+  password_no_letter: '密码必须包含至少一个字母。',
 
   // Settings
   settings_title: '设置',
