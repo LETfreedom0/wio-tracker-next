@@ -12,6 +12,7 @@
   --color-danger: var(--danger);
   --color-sick: var(--sick);
   --color-unpaid: var(--unpaid);
+  --color-compensatory: var(--compensatory);
 
   --font-display: Inter, sans-serif;
 
@@ -27,11 +28,12 @@
   --card: #ffffff;
   --subtle: #617589;
   --border: #e1e5ea;
-  --success: #10b981;
-  --warning: #f59e0b;
+  --success: #22c55e;
+  --warning: #f97316;
   --danger: #ef4444;
   --sick: #a855f7;
-  --unpaid: #6b7280;
+  --unpaid: #64748b;
+  --compensatory: #06b6d4;
 }
 
 body {

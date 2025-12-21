@@ -1,0 +1,22 @@
+    
+    export const countries = [
+  { code: 'CN', name: '中国 (China)' },
+  { code: 'HK', name: '中国香港 (Hong Kong)' },
+  { code: 'US', name: '美国 (United States)' },
+  { code: 'UK', name: '英国 (United Kingdom)' },
+  { code: 'JP', name: '日本 (Japan)' },
+  { code: 'SG', name: '新加坡 (Singapore)' },
+  { code: 'AU', name: '澳大利亚 (Australia)' },
+  { code: 'CA', name: '加拿大 (Canada)' },
+  { code: 'DE', name: '德国 (Germany)' },
+  { code: 'FR', name: '法国 (France)' },
+  { code: 'KR', name: '韩国 (South Korea)' },
+  { code: 'IN', name: '印度 (India)' },
+  { code: 'MY', name: '马来西亚 (Malaysia)' },
+  { code: 'TH', name: '泰国 (Thailand)' },
+  { code: 'VN', name: '越南 (Vietnam)' },
+  { code: 'ID', name: '印度尼西亚 (Indonesia)' },
+  { code: 'PH', name: '菲律宾 (Philippines)' },
+  { code: 'TW', name: '中国台湾 (Taiwan)' },
+  { code: 'MO', name: '中国澳门 (Macau)' },
+];

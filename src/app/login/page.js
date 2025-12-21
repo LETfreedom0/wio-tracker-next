@@ -5,7 +5,8 @@ import { supabase } from '../../lib/supabaseClient';
 import { useRouter } from 'next/navigation';
 import Navigation from '../components/Navigation';
 import { useLanguage } from '../context/LanguageContext';
-import { XMarkIcon, CheckCircleIcon, XCircleIcon } from '@heroicons/react/24/solid';
+import { XMarkIcon, CheckCircleIcon, XCircleIcon, UserIcon, GlobeAltIcon } from '@heroicons/react/24/solid';
+import { countries } from '../../lib/countries';
 
 const DISPOSABLE_DOMAINS = [
   'tempmail.com', 'throwawaymail.com', 'mailinator.com', 'guerrillamail.com', 
@@ -14,6 +15,8 @@ const DISPOSABLE_DOMAINS = [
 ];
 
 export default function Login() {
+  const [username, setUsername] = useState('');
+  const [country, setCountry] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -129,6 +132,13 @@ export default function Login() {
         if (error) throw error;
         setMessage(t('reset_email_sent'));
       } else if (isSignUp) {
+        // 注册前校验用户名
+        if (!username.trim()) {
+          setMessage(t('username_required'));
+          setLoading(false);
+          return;
+        }
+
         // 注册前校验密码 / Validate password before signup
         const passwordError = validatePassword(password);
         if (passwordError) {
@@ -139,6 +149,12 @@ export default function Login() {
         const { error } = await supabase.auth.signUp({
           email,
           password,
+          options: {
+            data: {
+              username: username.trim(),
+              country: country || null,
+            }
+          }
         });
         if (error) throw error;
         setMessage(t('register_success'));
@@ -202,7 +218,31 @@ export default function Login() {
                 autoComplete="off"
               />
             </div>
-            <div className="rounded-md shadow-sm -space-y-px">
+            <div className="space-y-4">
+              {isSignUp && (
+                <div className="relative">
+                  <input
+                    id="username"
+                    name="username"
+                    type="text"
+                    required
+                    className="appearance-none rounded-md relative block w-full px-3 py-2 pr-10 border border-border placeholder-subtle text-foreground focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm bg-background"
+                    placeholder={t('username_placeholder')}
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                  />
+                  {username && (
+                    <button
+                      type="button"
+                      onClick={() => setUsername('')}
+                      className="absolute inset-y-0 right-0 pr-3 flex items-center text-subtle hover:text-foreground z-20"
+                    >
+                      <XMarkIcon className="h-5 w-5" aria-hidden="true" />
+                    </button>
+                  )}
+                </div>
+              )}
+
               <div className="relative">
                 <input
                   id="email-address"
@@ -210,7 +250,7 @@ export default function Login() {
                   type="email"
                   autoComplete="email"
                   required
-                  className={`appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border border-border placeholder-subtle text-foreground ${isForgotPassword ? 'rounded-md' : 'rounded-t-md'} focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm bg-background`}
+                  className="appearance-none rounded-md relative block w-full px-3 py-2 pr-10 border border-border placeholder-subtle text-foreground focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm bg-background"
                   placeholder={t('email_placeholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
@@ -233,7 +273,7 @@ export default function Login() {
                     type="password"
                     autoComplete="current-password"
                     required
-                    className="appearance-none rounded-none relative block w-full px-3 py-2 pr-10 border border-border placeholder-subtle text-foreground rounded-b-md focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm bg-background"
+                    className="appearance-none rounded-md relative block w-full px-3 py-2 pr-10 border border-border placeholder-subtle text-foreground focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm bg-background"
                     placeholder={t('password_placeholder')}
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
@@ -247,6 +287,28 @@ export default function Login() {
                       <XMarkIcon className="h-5 w-5" aria-hidden="true" />
                     </button>
                   )}
+                </div>
+              )}
+
+              {isSignUp && (
+                <div className="relative">
+                  <select
+                    id="country"
+                    name="country"
+                    className="appearance-none rounded-md relative block w-full px-3 py-2 border border-border placeholder-subtle text-foreground focus:outline-none focus:ring-primary focus:border-primary focus:z-10 sm:text-sm bg-background"
+                    value={country}
+                    onChange={(e) => setCountry(e.target.value)}
+                  >
+                    <option value="">{t('country_placeholder')}</option>
+                    {countries.map((c) => (
+                      <option key={c.code} value={c.code}>
+                        {c.name}
+                      </option>
+                    ))}
+                  </select>
+                  <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-subtle">
+                    <GlobeAltIcon className="h-4 w-4" aria-hidden="true" />
+                  </div>
                 </div>
               )}
             </div>
@@ -324,6 +386,8 @@ export default function Login() {
                   setMessage('');
                   setPassword(''); // Clear password when switching modes
                   setEmail('');
+                  setUsername('');
+                  setCountry('');
                   setPasswordCriteria({ length: false, number: false, letter: false });
                   setShowPasswordValidation(false);
                 }}
