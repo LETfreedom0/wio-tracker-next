@@ -6,44 +6,26 @@
 
 我已经帮你完成了核心的代码修改，但你需要根据你的实际域名进行微调。
 
-### 1. 修改域名配置
-请打开以下文件，将代码中的 `https://wio-calculator.vercel.app` 替换为你**真实的上线域名**（例如 `https://www.your-wio-site.com`）：
-
-1.  **`src/app/layout.js`** (第 33 行左右)
-    *   修改 `metadata.openGraph.url`
-2.  **`src/app/sitemap.js`** (第 2 行)
-    *   修改 `baseUrl` 变量
-3.  **`src/app/robots.js`** (第 8 行)
-    *   修改 `sitemap` 的完整 URL
+### 1. 修改域名配置 (已自动完成)
+我已经将代码中的域名更新为 **https://wiotracker.xyz**。
 
 ### 2. 部署更新
-完成上述修改后，将代码推送到你的代码仓库（GitHub/GitLab），等待 Vercel 或你的服务器完成重新部署。
+请将最新代码推送到仓库（Git Push）并等待 Vercel 重新部署。
+**只有部署成功后，`https://wiotracker.xyz/sitemap.xml` 才会生效。**
 
 ---
 
 ## 第二阶段：Google Search Console (GSC) 设置
 
-这是最关键的一步，主动告诉 Google 你的网站存在。
-
 ### 1. 注册账号
-访问 [Google Search Console](https://search.google.com/search-console) 并使用 Google 账号登录。
+访问 [Google Search Console](https://search.google.com/search-console)。
 
 ### 2. 添加资源
-点击左上角的“添加资源” (Add Property)。你会有两个选择：
+点击左上角的“添加资源”，选择 **网址前缀 (URL Prefix)**：
+*   输入完整网址：`https://wiotracker.xyz`
+*   点击继续。
 
-*   **网域 (Domain)**:
-    *   输入 `example.com`（不带 http/https）。
-    *   **优点**: 覆盖所有子域名 (www, m, etc.)。
-    *   **验证方式**: 需要去你的域名服务商（如 GoDaddy, Namecheap, 阿里云）添加一条 DNS TXT 记录。
-    *   **推荐程度**: ⭐⭐⭐⭐⭐ (最稳健，但操作稍繁琐)
-
-*   **网址前缀 (URL Prefix)**:
-    *   输入完整网址 `https://www.example.com`。
-    *   **优点**: 验证简单。
-    *   **验证方式**: 提供多种方式，最简单的是 **HTML 标记**。
-    *   **推荐程度**: ⭐⭐⭐⭐ (快速上手)
-
-### 3. 验证网站所有权 (如果选择了 "网址前缀")
+### 3. 验证网站所有权
 如果你选择了“网址前缀”，Google 会要求你验证。选择 **"HTML 标记" (HTML tag)** 方法：
 
 1.  复制 Google 提供的 `<meta name="google-site-verification" content="你的验证代码" />`。

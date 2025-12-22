@@ -29,7 +29,7 @@ export const metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://wio-calculator.vercel.app", // 请替换为您的实际域名
+    url: "https://wiotracker.xyz",
     title: "WIO Calculator - Smart Attendance Tracking",
     description: "Track your office days, manage leaves, and monitor WIO targets effortlessly.",
     siteName: "WIO Calculator",

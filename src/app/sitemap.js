@@ -1,5 +1,5 @@
 export default function sitemap() {
-  const baseUrl = 'https://wio-calculator.vercel.app'; // 请替换为您的实际域名
+  const baseUrl = 'https://wiotracker.xyz';
 
   return [
     {
