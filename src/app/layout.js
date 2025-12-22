@@ -18,12 +18,30 @@ const inter = Inter({
 });
 
 export const metadata = {
+  metadataBase: new URL('https://wiotracker.xyz'),
+  alternates: {
+    canonical: '/',
+  },
   title: {
     default: "WIO Calculator - Track Your Office Attendance",
     template: "%s | WIO Calculator"
   },
   description: "Efficiently manage and track your Work In Office (WIO) days, remote work, leaves, and overtime. The best tool for hybrid work scheduling.",
-  keywords: ["WIO Calculator", "Work In Office", "Hybrid Work Tracker", "Attendance Management", "Leave Tracker", "Remote Work Log"],
+  keywords: [
+    // English
+    "WIO Calculator", "Work In Office", "Hybrid Work Tracker", "Attendance Management", "Leave Tracker", "Remote Work Log", "RTO Tracker", "Office Days Calculator",
+    // Chinese (Simplified & Traditional)
+    "WIO 计算器", "混合办公", "办公室打卡", "考勤管理", "远程办公记录", "年假计算器", "混合办公追踪", "在家办公", "回办公室", "打卡记录",
+    "混合辦公", "辦公室打卡", "考勤管理", "遠程辦公記錄", "年假計算器",
+    // Japanese
+    "出社管理", "リモートワーク", "ハイブリッドワーク", "勤怠管理", "出社日数",
+    // Korean
+    "재택근무", "하이브리드 근무", "출근 기록", "연차 관리",
+    // European
+    "Télétravail", "Travail Hybride", "Suivi Présence", // French
+    "Büroanwesenheit", "Homeoffice Rechner", "Hybrides Arbeiten", // German
+    "Trabajo Híbrido", "Control de Asistencia" // Spanish
+  ],
   authors: [{ name: "WIO Team" }],
   creator: "WIO Team",
   openGraph: {
@@ -44,7 +62,7 @@ export const metadata = {
     follow: true,
   },
   verification: {
-    google: "mRLgDKnHjX85NRnGUbYcBahVs527QtCUlNwo5kmj2BQ", // 请替换为您的实际验证代码  
+    google: "mRLgDKnHjX85NRnGUbYcBahVs527QtCUlNwo5kmj2BQ",
   }
 };
 
@@ -60,6 +78,25 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebApplication",
+              "name": "WIO Calculator",
+              "url": "https://wiotracker.xyz",
+              "applicationCategory": "Productivity",
+              "operatingSystem": "Web",
+              "offers": {
+                "@type": "Offer",
+                "price": "0",
+                "priceCurrency": "USD"
+              },
+              "description": "Efficiently manage and track your Work In Office (WIO) days, remote work, leaves, and overtime."
+            })
+          }}
+        />
         <LanguageProvider>
           {children}
         </LanguageProvider>

@@ -317,15 +317,15 @@ export default function Login() {
             {isSignUp && showPasswordValidation && (
               <div className="mt-2 space-y-1 bg-background/50 p-2 rounded-md text-xs">
                  <div className={`flex items-center ${passwordCriteria.length ? 'text-green-600' : 'text-red-500'}`}>
-                   {passwordCriteria.length ? <CheckCircleIcon className="h-4 w-4 mr-1" /> : <XCircleIcon className="h-4 w-4 mr-1" />}
+                   {passwordCriteria.length ? <CheckCircleIcon className="h-4 w-4 mr-1" aria-hidden="true" /> : <XCircleIcon className="h-4 w-4 mr-1" aria-hidden="true" />}
                    {t('password_too_short').replace('。', '')}
                  </div>
                  <div className={`flex items-center ${passwordCriteria.number ? 'text-green-600' : 'text-red-500'}`}>
-                   {passwordCriteria.number ? <CheckCircleIcon className="h-4 w-4 mr-1" /> : <XCircleIcon className="h-4 w-4 mr-1" />}
+                   {passwordCriteria.number ? <CheckCircleIcon className="h-4 w-4 mr-1" aria-hidden="true" /> : <XCircleIcon className="h-4 w-4 mr-1" aria-hidden="true" />}
                    {t('password_no_number').replace('。', '')}
                  </div>
                  <div className={`flex items-center ${passwordCriteria.letter ? 'text-green-600' : 'text-red-500'}`}>
-                   {passwordCriteria.letter ? <CheckCircleIcon className="h-4 w-4 mr-1" /> : <XCircleIcon className="h-4 w-4 mr-1" />}
+                   {passwordCriteria.letter ? <CheckCircleIcon className="h-4 w-4 mr-1" aria-hidden="true" /> : <XCircleIcon className="h-4 w-4 mr-1" aria-hidden="true" />}
                    {t('password_no_letter').replace('。', '')}
                  </div>
               </div>
