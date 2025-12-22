@@ -607,7 +607,7 @@ export default function Home() {
       <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 flex-grow">
         <div className="max-w-7xl mx-auto">
           <div className="mb-4 sm:mb-8">
-            <h2 className="text-3xl font-bold tracking-tight">{t('wio_status_title')}</h2>
+            <h1 className="text-3xl font-bold tracking-tight">{t('wio_status_title')}</h1>
             {!user && (
               <p className="mt-2 text-subtle">
                 {t('data_local_hint')}
