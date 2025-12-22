@@ -18,8 +18,31 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "WIO Calculator",
-  description: "WIO Calculator Settings and Management",
+  title: {
+    default: "WIO Calculator - Track Your Office Attendance",
+    template: "%s | WIO Calculator"
+  },
+  description: "Efficiently manage and track your Work In Office (WIO) days, remote work, leaves, and overtime. The best tool for hybrid work scheduling.",
+  keywords: ["WIO Calculator", "Work In Office", "Hybrid Work Tracker", "Attendance Management", "Leave Tracker", "Remote Work Log"],
+  authors: [{ name: "WIO Team" }],
+  creator: "WIO Team",
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "https://wiotracker.xyz",
+    title: "WIO Calculator - Smart Attendance Tracking",
+    description: "Track your office days, manage leaves, and monitor WIO targets effortlessly.",
+    siteName: "WIO Calculator",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "WIO Calculator",
+    description: "Track your office days, manage leaves, and monitor WIO targets effortlessly.",
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 };
 
 export default function RootLayout({ children }) {
