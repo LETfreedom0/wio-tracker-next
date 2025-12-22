@@ -682,6 +682,7 @@ export default function Home() {
                       onContextMenu={(e) => toggleOtStatus(day, e)}
                       style={statusStyle}
                       className={`h-10 sm:h-12 w-full flex flex-col items-center justify-center rounded-lg transition-colors relative ${statusClass} ${isToday ? 'ring-2 ring-primary/50' : ''}`}
+                      aria-label={`${currentDate.getFullYear()}-${currentDate.getMonth() + 1}-${day}, AM: ${status.am}, PM: ${status.pm}`}
                     >
                       <span className={`leading-none ${isPublicHoliday && isFutureOrToday && holidayName ? 'text-xs font-bold mb-0.5' : 'text-sm'}`}>
                         {isToday ? t('today') : day}
