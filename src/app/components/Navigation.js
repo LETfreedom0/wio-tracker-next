@@ -1,7 +1,8 @@
 'use client';
 
+import React, { useState, useEffect, Fragment } from 'react';
+import { Menu, Transition } from '@headlessui/react';
 import Link from 'next/link';
-import { useState, useEffect } from 'react';
 import { supabase } from '../../lib/supabaseClient';
 import { useRouter, usePathname } from 'next/navigation';
 import { useLanguage } from '../context/LanguageContext';
@@ -10,7 +11,7 @@ export default function Navigation() {
   const [user, setUser] = useState(null);
   const router = useRouter();
   const pathname = usePathname();
-  const { t } = useLanguage();
+  const { t, language, changeLanguage } = useLanguage();
 
   useEffect(() => {
     const getUser = async () => {
@@ -72,6 +73,52 @@ export default function Navigation() {
                 {t('login')}
               </Link>
             )}
+
+            <Menu as="div" className="relative">
+              <Menu.Button className="flex items-center text-subtle hover:text-primary transition-colors p-1" aria-label="Change Language">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"></circle>
+                  <line x1="2" y1="12" x2="22" y2="12"></line>
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1 4-10z"></path>
+                </svg>
+              </Menu.Button>
+              <Transition
+                as={Fragment}
+                enter="transition ease-out duration-100"
+                enterFrom="transform opacity-0 scale-95"
+                enterTo="transform opacity-100 scale-100"
+                leave="transition ease-in duration-75"
+                leaveFrom="transform opacity-100 scale-100"
+                leaveTo="transform opacity-0 scale-95"
+              >
+                <Menu.Items className="absolute right-0 z-20 mt-2 w-40 origin-top-right rounded-md bg-card py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-border overflow-y-auto max-h-96">
+                  {[
+                    { code: 'en', label: 'English' },
+                    { code: 'zh', label: '中文' },
+                    { code: 'fr', label: 'Français' },
+                    { code: 'ru', label: 'Русский' },
+                    { code: 'es', label: 'Español' },
+                    { code: 'ar', label: 'العربية' },
+                    { code: 'pt', label: 'Português' },
+                    { code: 'de', label: 'Deutsch' },
+                  ].map((langOption) => (
+                    <Menu.Item key={langOption.code}>
+                      {({ active }) => (
+                        <button
+                          onClick={() => changeLanguage(langOption.code)}
+                          className={`${
+                            active ? 'bg-primary/10' : ''
+                          } ${language === langOption.code ? 'font-bold text-primary' : 'text-foreground'} block px-4 py-2 text-sm w-full text-left`}
+                        >
+                          {langOption.label}
+                        </button>
+                      )}
+                    </Menu.Item>
+                  ))}
+                </Menu.Items>
+              </Transition>
+            </Menu>
+
             <div className="flex items-center gap-2 text-sm text-subtle">
               <svg className="h-5 w-5" fill="none" stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>

@@ -409,41 +409,7 @@ export default function Settings() {
               </div>
             </div>
 
-            <div className="border-t border-border"></div>
-
-            {/* Language Section */}
-            <div className="space-y-2 sm:space-y-3">
-              <h3 className="text-base sm:text-lg font-bold text-foreground">{t('language_title')}</h3>
-              <fieldset>
-                <legend className="sr-only">Language selection</legend>
-                <div className="flex flex-wrap gap-3">
-                  <label className={`relative flex items-center justify-center px-5 py-3 rounded-lg border cursor-pointer transition-all duration-200 ${language === 'en' ? 'border-primary ring-2 ring-primary/50' : 'border-border hover:border-primary/50'} bg-card`}>
-                    <input
-                      className="absolute h-full w-full opacity-0 cursor-pointer"
-                      name="language"
-                      type="radio"
-                      value="en"
-                      checked={language === 'en'}
-                      onChange={(e) => changeLanguage(e.target.value)}
-                    />
-                    <span className="text-sm font-medium text-foreground">{t('english')}</span>
-                  </label>
-                  <label className={`relative flex items-center justify-center px-5 py-3 rounded-lg border cursor-pointer transition-all duration-200 ${language === 'zh' ? 'border-primary ring-2 ring-primary/50' : 'border-border hover:border-primary/50'} bg-card`}>
-                    <input
-                      className="absolute h-full w-full opacity-0 cursor-pointer"
-                      name="language"
-                      type="radio"
-                      value="zh"
-                      checked={language === 'zh'}
-                      onChange={(e) => changeLanguage(e.target.value)}
-                    />
-                    <span className="text-sm font-medium text-foreground">{t('chinese')}</span>
-                  </label>
-                </div>
-              </fieldset>
-            </div>
-
-            <div className="border-t border-border"></div>
+            {/* Language Section removed (moved to Navigation) */}
 
             {/* Export Section */}
             <div className="space-y-2 sm:space-y-3">
