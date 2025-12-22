@@ -43,6 +43,9 @@ export const metadata = {
     index: true,
     follow: true,
   },
+  verification: {
+    google: "mRLgDKnHjX85NRnGUbYcBahVs527QtCUlNwo5kmj2BQ", // 请替换为您的实际验证代码  
+  }
 };
 
 export default function RootLayout({ children }) {
