@@ -1,6 +1,15 @@
 import Holidays from 'date-holidays';
 import { supabase } from './supabaseClient';
 
+/**
+ * Fetch public holiday data for a specific country and year.
+ * Strategy: Cache (DB) -> API (Timor/Nager) -> Local Lib (date-holidays)
+ * Only caches data to DB for the current year and the next year.
+ * 
+ * @param {string} countryCode - ISO 3166-1 alpha-2 country code (e.g., 'CN', 'US')
+ * @param {number|string} year - The year to fetch holidays for
+ * @returns {Promise<Array<{date: string, name: string, type: string, isSubstitute: boolean}>>} List of public holidays
+ */
 export const getHolidayData = async (countryCode, year) => {
     if (!countryCode) return [];
     
@@ -104,7 +113,10 @@ export const getHolidayData = async (countryCode, year) => {
     }
 
     // 3. Store result in DB 'public_holidays' table
-    if (holidays.length > 0) {
+    const currentYear = new Date().getFullYear();
+    const targetYear = Number(year);
+    // Only save current year and next year
+    if (holidays.length > 0 && (targetYear === currentYear || targetYear === currentYear + 1)) {
         try {
             await supabase
                 .from('public_holidays')

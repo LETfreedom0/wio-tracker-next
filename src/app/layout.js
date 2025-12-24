@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono, Inter } from "next/font/google";
 import "./globals.css";
 import { LanguageProvider } from "./context/LanguageContext";
+import GoogleAdsense from './components/GoogleAdsense';
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -78,6 +79,13 @@ export default function RootLayout({ children }) {
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${inter.variable} antialiased`}
       >
+        {/* 
+          Google AdSense 集成:
+          1. 去 Google AdSense 申请账号并获取发布商 ID (例如 ca-pub-1234567890)。
+          2. 取消下面这行代码的注释，并填入你的 ID。
+        */}
+        {/* <GoogleAdsense pId="ca-pub-XXXXXXXXXXXXXXXX" /> */}
+
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{

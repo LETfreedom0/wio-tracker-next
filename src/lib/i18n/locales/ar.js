@@ -38,7 +38,7 @@ export const ar = {
 
   // Settings
   settings_title: 'الإعدادات',
-  settings_desc: 'إدارة تفضيلاتك.',
+  settings_desc: 'إدارة هدف WIO والإعدادات الشخصية.',
   settings_profile_title: 'الملف الشخصي',
   membership_status: 'الخطة الحالية',
   membership_free: 'خطة مجانية',

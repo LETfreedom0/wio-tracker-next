@@ -38,7 +38,7 @@ export const en = {
 
   // Settings
   settings_title: 'Settings',
-  settings_desc: 'Manage your WIO target and language preferences.',
+  settings_desc: 'Manage your WIO target and personal settings.',
   settings_profile_title: 'Profile',
   membership_status: 'Current Plan',
   membership_free: 'Free Plan',
@@ -134,4 +134,14 @@ export const en = {
   export_data_title: 'Export Data',
   export_data_desc: 'Export your attendance records as a CSV file.',
   export_btn: 'Export CSV',
+
+  // Share
+  share_title: 'Share My WIO',
+  share_btn: 'Share',
+  download_image: 'Save Image',
+  share_card_title: 'My {month} WIO',
+  scan_to_visit: 'Scan to use',
+  website_name: 'WIO Tracker',
+  website_url: 'www.wiotracker.xyz',
+  slogan: 'Track your work rhythm',
 };
