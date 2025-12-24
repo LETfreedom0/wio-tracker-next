@@ -38,7 +38,7 @@ export const ru = {
 
   // Settings
   settings_title: 'Настройки',
-  settings_desc: 'Управление настройками.',
+  settings_desc: 'Управляйте целью WIO и личными настройками.',
   settings_profile_title: 'Профиль',
   membership_status: 'Текущий план',
   membership_free: 'Бесплатный',

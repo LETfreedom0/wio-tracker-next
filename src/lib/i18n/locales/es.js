@@ -38,7 +38,7 @@ export const es = {
 
   // Settings
   settings_title: 'Configuración',
-  settings_desc: 'Administra tus preferencias.',
+  settings_desc: 'Administra tu objetivo WIO y configuración personal.',
   settings_profile_title: 'Perfil',
   membership_status: 'Plan actual',
   membership_free: 'Plan Gratuito',

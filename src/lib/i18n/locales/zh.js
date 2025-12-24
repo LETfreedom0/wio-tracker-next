@@ -38,7 +38,7 @@ export const zh = {
 
   // Settings
   settings_title: '设置',
-  settings_desc: '管理您的 WIO 目标和语言偏好。',
+  settings_desc: '管理您的 WIO 目标和个人设置。',
   settings_profile_title: '个人资料',
   membership_status: '当前订阅',
   membership_free: '免费版',
@@ -134,4 +134,14 @@ export const zh = {
   export_data_title: '导出数据',
   export_data_desc: '将您的考勤记录导出为 CSV 文件。',
   export_btn: '导出 CSV',
+  
+  // Share
+  share_title: '分享我的 WIO',
+  share_btn: '分享',
+  download_image: '保存图片',
+  share_card_title: '我的 {month} WIO',
+  scan_to_visit: '扫码使用',
+  website_name: 'WIO Tracker',
+  website_url: 'www.wiotracker.xyz',
+  slogan: '轻松记录工作节奏',
 };

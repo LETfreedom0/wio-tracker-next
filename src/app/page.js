@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Navigation from './components/Navigation';
+import ShareModal from './components/ShareModal';
 import { supabase } from '../lib/supabaseClient';
 import { useLanguage } from './context/LanguageContext';
 import { STATUS_CODES, CODE_TO_KEY, KEY_TO_CODE, decodeStatus, encodeStatus } from '../lib/constants';
@@ -27,6 +28,7 @@ export default function Home() {
   
   // OT Modal State
   const [showOtModal, setShowOtModal] = useState(false);
+  const [isShareModalOpen, setIsShareModalOpen] = useState(false);
   const [currentOtDate, setCurrentOtDate] = useState(null);
   const [otDurationInput, setOtDurationInput] = useState('1');
   const [showHelp, setShowHelp] = useState(false);
@@ -579,7 +581,17 @@ export default function Home() {
   const monthlyWioNode = (
     <div className={`bg-card p-4 sm:p-6 rounded-lg border border-border shadow-sm ${isBelowTarget ? 'ring-2 ring-danger/50' : ''}`}>
       <div className="flex justify-between items-start">
-        <h3 className="font-bold text-lg">{t('monthly_wio')}</h3>
+        <div className="flex items-center gap-2">
+            <h3 className="font-bold text-lg">{t('monthly_wio')}</h3>
+            <button 
+                onClick={() => setIsShareModalOpen(true)}
+                className="flex items-center gap-1 text-xs bg-primary/10 text-primary px-2 py-1 rounded-md hover:bg-primary/20 transition-colors"
+                title={t('share_title')}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>
+                <span className="font-medium">{t('share_btn')}</span>
+            </button>
+        </div>
         <span className={`font-bold text-2xl ${isBelowTarget ? 'text-danger' : 'text-success'}`}>
           {wioPercentage}%
         </span>
@@ -984,6 +996,19 @@ export default function Home() {
           </div>
         </div>
       )}
+
+      {/* Share Modal */}
+      <ShareModal 
+        isOpen={isShareModalOpen}
+        onClose={() => setIsShareModalOpen(false)}
+        currentDate={currentDate}
+        wioPercentage={wioPercentage}
+        wioTarget={wioTarget}
+        attendanceData={attendanceData}
+        publicHolidays={publicHolidays}
+        t={t}
+        language={language}
+      />
     </div>
   );
 }

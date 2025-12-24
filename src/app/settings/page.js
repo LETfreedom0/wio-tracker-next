@@ -268,13 +268,15 @@ export default function Settings() {
           </div>
 
           {/* Info Banner */}
-          <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-lg p-3 sm:p-4 flex items-start gap-3">
-            <span className="material-symbols-outlined text-blue-600 dark:text-blue-400 mt-0.5">info</span>
+          <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 flex items-start gap-4">
+            <div className="p-2 bg-primary/10 rounded-full shrink-0">
+              <span className="material-symbols-outlined text-primary text-[20px] leading-none">info</span>
+            </div>
             <div className="flex-1">
-              <p className="text-sm font-medium text-blue-800 dark:text-blue-200">
+              <h4 className="text-sm font-semibold text-foreground">
                 {user ? t('data_synced_title') : t('data_local_title')}
-              </p>
-              <p className="text-sm text-blue-700 dark:text-blue-300 mt-1">
+              </h4>
+              <p className="text-sm text-subtle mt-1 leading-relaxed">
                 {user 
                   ? t('data_synced_desc')
                   : t('data_local_desc')}
