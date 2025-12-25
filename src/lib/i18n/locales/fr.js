@@ -140,4 +140,20 @@ export const fr = {
   export_data_title: 'Exporter les données',
   export_data_desc: 'Exporter vos enregistrements en CSV.',
   export_btn: 'Exporter CSV',
+
+  // SEO Content
+  seo_title_1: 'Qu\'est-ce que le Calculateur WIO ?',
+  seo_desc_1: 'Le Calculateur WIO est un outil spécialisé conçu pour les environnements de travail hybrides. Il aide les employés et les gestionnaires à suivre les jours de "Travail au Bureau" (WIO), à calculer les pourcentages de présence et à assurer la conformité aux politiques de l\'entreprise (par exemple, les mandats de retour au bureau).',
+  seo_title_2: 'Fonctionnalités Clés',
+  seo_feature_1: 'Suivi de Présence Facile : Marquez les jours comme Bureau, Télétravail, Congé ou Jour Férié en un seul clic.',
+  seo_feature_2: 'Pourcentage WIO en Temps Réel : Voyez instantanément si vous atteignez vos objectifs mensuels de présence au bureau.',
+  seo_feature_3: 'Gestion des Congés : Suivez vos Congés Annuels, Congés Maladie et autres quotas de temps libre.',
+  seo_feature_4: 'Confidentialité d\'Abord : Les données sont stockées localement sur votre appareil par défaut, avec une synchronisation cloud optionnelle.',
+  seo_title_3: 'Pourquoi utiliser WIO Tracker ?',
+  seo_desc_3: 'À l\'ère du travail hybride, tenir un journal manuel des jours de bureau peut être fastidieux. WIO Tracker simplifie ce processus, fournissant un calendrier visuel clair et des statistiques détaillées pour vous aider à planifier votre semaine de travail efficacement.',
+  seo_faq_title: 'Foire Aux Questions',
+  seo_faq_q1: 'Le Calculateur WIO est-il gratuit ?',
+  seo_faq_a1: 'Oui, les fonctionnalités de base du Calculateur WIO sont entièrement gratuites.',
+  seo_faq_q2: 'Mes données sont-elles sécurisées ?',
+  seo_faq_a2: 'Absolument. Par défaut, vos données sont stockées dans le stockage local de votre navigateur. Si vous choisissez de vous connecter, les données sont chiffrées et synchronisées en toute sécurité.',
 };

@@ -936,6 +936,38 @@ export default function Home() {
               
             </div>
           </div>
+          {/* SEO Content Section */}
+          <div className="mt-12 lg:mt-24 border-t border-border pt-12 text-subtle">
+            <section className="mb-12">
+              <h2 className="text-2xl font-bold text-foreground mb-4">{t('seo_title_1')}</h2>
+              <p className="mb-6 leading-relaxed">{t('seo_desc_1')}</p>
+              
+              <h2 className="text-2xl font-bold text-foreground mb-4">{t('seo_title_2')}</h2>
+              <ul className="list-disc pl-6 space-y-2 mb-6">
+                <li>{t('seo_feature_1')}</li>
+                <li>{t('seo_feature_2')}</li>
+                <li>{t('seo_feature_3')}</li>
+                <li>{t('seo_feature_4')}</li>
+              </ul>
+
+              <h2 className="text-2xl font-bold text-foreground mb-4">{t('seo_title_3')}</h2>
+              <p className="mb-6 leading-relaxed">{t('seo_desc_3')}</p>
+            </section>
+
+            <section>
+              <h2 className="text-2xl font-bold text-foreground mb-4">{t('seo_faq_title')}</h2>
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">{t('seo_faq_q1')}</h3>
+                  <p>{t('seo_faq_a1')}</p>
+                </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">{t('seo_faq_q2')}</h3>
+                  <p>{t('seo_faq_a2')}</p>
+                </div>
+              </div>
+            </section>
+          </div>
         </div>
       </main>
       {/* OT Duration Modal */}

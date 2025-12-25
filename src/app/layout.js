@@ -52,11 +52,20 @@ export const metadata = {
     title: "WIO Calculator - Smart Attendance Tracking",
     description: "Track your office days, manage leaves, and monitor WIO targets effortlessly.",
     siteName: "WIO Calculator",
+    images: [
+      {
+        url: 'https://wiotracker.xyz/og-image.png',
+        width: 1200,
+        height: 630,
+        alt: 'WIO Calculator Preview',
+      },
+    ],
   },
   twitter: {
     card: "summary_large_image",
     title: "WIO Calculator",
     description: "Track your office days, manage leaves, and monitor WIO targets effortlessly.",
+    images: ['https://wiotracker.xyz/og-image.png'],
   },
   robots: {
     index: true,
@@ -91,17 +100,24 @@ export default function RootLayout({ children }) {
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "https://schema.org",
-              "@type": "WebApplication",
+              "@type": "SoftwareApplication",
               "name": "WIO Calculator",
               "url": "https://wiotracker.xyz",
-              "applicationCategory": "Productivity",
-              "operatingSystem": "Web",
+              "applicationCategory": "ProductivityApplication",
+              "operatingSystem": "Web Browser",
               "offers": {
                 "@type": "Offer",
                 "price": "0",
                 "priceCurrency": "USD"
               },
-              "description": "Efficiently manage and track your Work In Office (WIO) days, remote work, leaves, and overtime."
+              "description": "Efficiently manage and track your Work In Office (WIO) days, remote work, leaves, and overtime. The best tool for hybrid work scheduling.",
+              "featureList": "Attendance tracking, Leave management, WIO percentage calculation, Overtime monitoring",
+              "screenshot": "https://wiotracker.xyz/og-image.png",
+              "author": {
+                "@type": "Organization",
+                "name": "WIO Team",
+                "url": "https://wiotracker.xyz"
+              }
             })
           }}
         />

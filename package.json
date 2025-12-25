@@ -13,6 +13,7 @@
     "@heroicons/react": "^2.2.0",
     "@supabase/supabase-js": "^2.87.1",
     "date-holidays": "^3.26.5",
+    "html-to-image": "^1.11.13",
     "html2canvas": "^1.4.1",
     "next": "16.0.10",
     "qrcode": "^1.5.4",

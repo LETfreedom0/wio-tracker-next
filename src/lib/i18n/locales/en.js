@@ -144,4 +144,20 @@ export const en = {
   website_name: 'WIO Tracker',
   website_url: 'www.wiotracker.xyz',
   slogan: 'Track your work rhythm',
+
+  // SEO Content
+  seo_title_1: 'What is WIO Calculator?',
+  seo_desc_1: 'WIO Calculator is a specialized tool designed for hybrid work environments. It helps employees and managers track "Work In Office" (WIO) days, calculate attendance percentages, and ensure compliance with company policies (e.g., Return to Office mandates).',
+  seo_title_2: 'Key Features',
+  seo_feature_1: 'Easy Attendance Tracking: Mark days as Office, Remote, Leave, or Public Holiday with a single click.',
+  seo_feature_2: 'Real-time WIO Percentage: Instantly see if you are meeting your monthly office attendance targets.',
+  seo_feature_3: 'Leave Management: Keep track of your Annual Leave, Sick Leave, and other time-off quotas.',
+  seo_feature_4: 'Privacy First: Data is stored locally on your device by default, with optional cloud sync.',
+  seo_title_3: 'Why Use WIO Tracker?',
+  seo_desc_3: 'In the era of hybrid work, keeping a manual log of office days can be tedious. WIO Tracker simplifies this process, providing a clear visual calendar and detailed statistics to help you plan your work week effectively.',
+  seo_faq_title: 'Frequently Asked Questions',
+  seo_faq_q1: 'Is WIO Calculator free?',
+  seo_faq_a1: 'Yes, the basic features of WIO Calculator are completely free to use.',
+  seo_faq_q2: 'Is my data secure?',
+  seo_faq_a2: 'Absolutely. By default, your data is stored in your browser\'s local storage. If you choose to login, data is encrypted and synced securely.',
 };
