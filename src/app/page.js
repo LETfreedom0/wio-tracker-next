@@ -965,6 +965,10 @@ export default function Home() {
                   <h3 className="text-lg font-semibold text-foreground mb-2">{t('seo_faq_q2')}</h3>
                   <p>{t('seo_faq_a2')}</p>
                 </div>
+                <div>
+                  <h3 className="text-lg font-semibold text-foreground mb-2">{t('seo_faq_q3')}</h3>
+                  <p>{t('seo_faq_a3')}</p>
+                </div>
               </div>
             </section>
           </div>

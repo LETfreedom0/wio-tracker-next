@@ -141,6 +141,18 @@ export const de = {
   export_data_desc: 'Als CSV exportieren.',
   export_btn: 'CSV Exportieren',
 
+  // Share
+  share_title: 'Mein WIO teilen',
+  share_btn: 'Teilen',
+  download_image: 'Bild speichern',
+  share_card_title: 'Mein {month} WIO',
+  my: 'Mein',
+  share_rate_label: 'Büroanwesenheit',
+  scan_to_visit: 'Zum Nutzen scannen',
+  website_name: 'WIO Tracker',
+  website_url: 'www.wiotracker.xyz',
+  slogan: 'Verfolgen Sie Ihren Arbeitsrhythmus',
+
   // SEO Content
   seo_title_1: 'Was ist der WIO-Rechner?',
   seo_desc_1: 'Der WIO-Rechner ist ein spezialisiertes Tool für hybride Arbeitsumgebungen. Es hilft Mitarbeitern und Managern, "Work In Office" (WIO)-Tage zu verfolgen, Anwesenheitsprozentsätze zu berechnen und die Einhaltung von Unternehmensrichtlinien (z. B. Rückkehr ins Büro) sicherzustellen.',
@@ -156,4 +168,6 @@ export const de = {
   seo_faq_a1: 'Ja, die Grundfunktionen des WIO-Rechners sind völlig kostenlos.',
   seo_faq_q2: 'Sind meine Daten sicher?',
   seo_faq_a2: 'Absolut. Standardmäßig werden Ihre Daten im lokalen Speicher Ihres Browsers gespeichert. Wenn Sie sich anmelden, werden die Daten verschlüsselt und sicher synchronisiert.',
+  seo_faq_q3: 'Wie wird der WIO-Prozentsatz berechnet?',
+  seo_faq_a3: 'WIO-Prozentsatz = (Bürotage) / (Gesamtarbeitstage - Urlaub - Feiertage). „Gesamtarbeitstage“ umfasst nur Montag bis Freitag. Wenn Sie „Jahresurlaub“, „Krankheitsurlaub“, „Unbezahlter Urlaub“ oder „Feiertag“ markieren, werden diese Tage vom Nenner ausgeschlossen und senken Ihre Anwesenheitsquote nicht.',
 };

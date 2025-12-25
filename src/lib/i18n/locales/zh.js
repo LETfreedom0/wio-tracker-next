@@ -140,6 +140,8 @@ export const zh = {
   share_btn: '分享',
   download_image: '保存图片',
   share_card_title: '我的 {month} WIO',
+  my: '我的',
+  share_rate_label: '办公室出勤率',
   scan_to_visit: '扫码使用',
   website_name: 'WIO Tracker',
   website_url: 'www.wiotracker.xyz',
@@ -160,4 +162,6 @@ export const zh = {
   seo_faq_a1: '是的，WIO 计算器的基础功能完全免费使用。',
   seo_faq_q2: '我的数据安全吗？',
   seo_faq_a2: '绝对安全。默认情况下，您的数据仅存储在浏览器的本地存储中。如果您选择登录，数据将被加密并安全地同步。',
+  seo_faq_q3: 'WIO 百分比是如何计算的？',
+  seo_faq_a3: 'WIO 百分比 = (办公室办公天数) / (总工作日 - 假期 - 公共假期)。其中，“总工作日”仅包含周一至周五。如果您标记了“年假”、“病假”、“无薪假”或“公共假期”，这些天数将从分母中扣除，不会拉低您的出勤率。',
 };

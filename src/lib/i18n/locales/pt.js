@@ -141,6 +141,18 @@ export const pt = {
   export_data_desc: 'Exportar registros como CSV.',
   export_btn: 'Exportar CSV',
 
+  // Share
+  share_title: 'Compartilhar meu WIO',
+  share_btn: 'Compartilhar',
+  download_image: 'Salvar imagem',
+  share_card_title: 'Meu WIO de {month}',
+  my: 'Meu',
+  share_rate_label: 'Presença no escritório',
+  scan_to_visit: 'Escaneie para usar',
+  website_name: 'WIO Tracker',
+  website_url: 'www.wiotracker.xyz',
+  slogan: 'Acompanhe seu ritmo de trabalho',
+
   // SEO Content
   seo_title_1: 'O que é a Calculadora WIO?',
   seo_desc_1: 'A Calculadora WIO é uma ferramenta especializada projetada para ambientes de trabalho híbrido. Ela ajuda funcionários e gerentes a rastrear dias de "Trabalho no Escritório" (WIO), calcular porcentagens de presença e garantir a conformidade com as políticas da empresa (por exemplo, mandatos de retorno ao escritório).',
@@ -156,4 +168,6 @@ export const pt = {
   seo_faq_a1: 'Sim, os recursos básicos da Calculadora WIO são totalmente gratuitos para uso.',
   seo_faq_q2: 'Meus dados estão seguros?',
   seo_faq_a2: 'Absolutamente. Por padrão, seus dados são armazenados no armazenamento local do seu navegador. Se você optar por fazer login, os dados são criptografados e sincronizados com segurança.',
+  seo_faq_q3: 'Como é calculada a porcentagem WIO?',
+  seo_faq_a3: 'Porcentagem WIO = (Dias no Escritório) / (Total de Dias Úteis - Licenças - Feriados). "Total de Dias Úteis" inclui apenas de segunda a sexta-feira. Se marcar "Férias Anuais", "Licença Médica", "Licença Sem Vencimento" ou "Feriado", estes dias são excluídos do denominador e não reduzirão a sua taxa de assiduidade.',
 };

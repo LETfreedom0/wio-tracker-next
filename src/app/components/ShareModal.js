@@ -173,9 +173,22 @@ export default function ShareModal({
     };
   };
 
+  const localeMap = {
+    zh: 'zh-CN',
+    en: 'en-US',
+    fr: 'fr-FR',
+    ru: 'ru-RU',
+    es: 'es-ES',
+    ar: 'ar-SA',
+    pt: 'pt-PT',
+    de: 'de-DE'
+  };
+  const locale = localeMap[language] || 'en-US';
+
   const daysInMonth = getDaysInMonth(currentDate);
   const firstDayOfMonth = getFirstDayOfMonth(currentDate);
-  const monthName = currentDate.toLocaleString(language === 'en' ? 'en-US' : 'zh-CN', { year: 'numeric', month: 'long' });
+  const monthName = currentDate.toLocaleString(locale, { year: 'numeric', month: 'long' });
+  const monthNameOnly = currentDate.toLocaleString(locale, { month: 'long' });
   const isBelowTarget = wioPercentage < wioTarget;
 
   // Calculate used statuses for dynamic legend
@@ -238,17 +251,21 @@ export default function ShareModal({
             {/* Header */}
             <div className="flex justify-between items-start mb-6 relative z-10">
                 <div className="flex flex-col">
-                    <h2 className="text-2xl font-bold tracking-tight" style={{ lineHeight: '1.2' }}>{t('share_card_title').replace('{month}', monthName)}</h2>
-                    <p className="text-xs mt-2 font-medium tracking-wide uppercase" style={{ color: '#64748b', lineHeight: '1' }}>{t('website_name')}</p>
+                    <span className="text-4xl font-extrabold tracking-tight block capitalize" style={{ color: '#334155', lineHeight: '1.1' }}>
+                        {language === 'zh' ? monthName : monthNameOnly}
+                    </span>
+                    <span className="text-lg font-bold tracking-tight mt-1 block" style={{ color: '#64748b' }}>
+                        {language === 'zh' ? t('monthly_wio') : `${currentDate.getFullYear()} WIO`}
+                    </span>
                 </div>
                 <div className="flex flex-col items-end">
                     <span 
-                        className="text-4xl font-bold block"
-                        style={{ color: isBelowTarget ? '#ef4444' : '#22c55e', lineHeight: '1' }}
+                        className="text-6xl font-bold block"
+                        style={{ color: isBelowTarget ? '#ef4444' : '#22c55e', lineHeight: '0.8' }}
                     >
                         {wioPercentage}%
                     </span>
-                    <span className="text-[10px] font-bold mt-1 tracking-wider block" style={{ color: '#94a3b8', lineHeight: '1' }}>WIO SCORE</span>
+                    <span className="text-xs font-medium mt-2 text-right" style={{ color: '#64748b' }}>{t('share_rate_label')}</span>
                 </div>
             </div>
 
