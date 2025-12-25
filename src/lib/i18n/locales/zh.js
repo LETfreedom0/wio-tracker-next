@@ -144,4 +144,20 @@ export const zh = {
   website_name: 'WIO Tracker',
   website_url: 'www.wiotracker.xyz',
   slogan: '轻松记录工作节奏',
+
+  // SEO Content
+  seo_title_1: '什么是 WIO 计算器？',
+  seo_desc_1: 'WIO 计算器是一款专为混合办公环境设计的工具。它帮助员工和管理者轻松追踪“办公室工作”(Work In Office) 天数，计算出勤百分比，并确保符合公司的混合办公政策（如 RTO 返岗要求）。',
+  seo_title_2: '主要功能',
+  seo_feature_1: '便捷考勤记录：一键标记办公室、远程、休假或公共假期状态。',
+  seo_feature_2: '实时 WIO 百分比：即时查看您是否达到月度办公室出勤目标。',
+  seo_feature_3: '假期管理：追踪您的年假、病假和其他假期余额。',
+  seo_feature_4: '隐私优先：数据默认仅存储在您的本地设备上，支持可选的云端同步。',
+  seo_title_3: '为什么使用 WIO Tracker？',
+  seo_desc_3: '在混合办公时代，手动记录办公室天数既繁琐又容易出错。WIO Tracker 简化了这一过程，提供清晰的可视化日历和详细的统计数据，帮助您高效规划工作周。',
+  seo_faq_title: '常见问题 (FAQ)',
+  seo_faq_q1: 'WIO 计算器是免费的吗？',
+  seo_faq_a1: '是的，WIO 计算器的基础功能完全免费使用。',
+  seo_faq_q2: '我的数据安全吗？',
+  seo_faq_a2: '绝对安全。默认情况下，您的数据仅存储在浏览器的本地存储中。如果您选择登录，数据将被加密并安全地同步。',
 };

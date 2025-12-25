@@ -1,7 +1,7 @@
 'use client';
 
 import { useRef, useState, useEffect } from 'react';
-import html2canvas from 'html2canvas';
+import { toPng } from 'html-to-image';
 import QRCode from 'qrcode';
 
 export default function ShareModal({ 
@@ -31,45 +31,71 @@ export default function ShareModal({
 
   /**
    * 处理下载图片逻辑
-   * 使用 html2canvas 将 DOM 节点转换为 Canvas，然后导出为 PNG 图片
+   * 使用 html-to-image 将 DOM 节点转换为 PNG 图片
+   * 这种方式使用 SVG foreignObject，通常比 html2canvas 更准确地还原 CSS 样式
    */
   const handleDownload = async () => {
     if (!cardRef.current) return;
     setDownloading(true);
+    
+    // Wait for fonts to be fully loaded
+    await document.fonts.ready;
+
+    // Temporarily remove animation classes to prevent layout shifts during capture
+    const modalContent = cardRef.current.closest('.animate-in');
+    let originalAnimationClasses = '';
+    if (modalContent) {
+        originalAnimationClasses = modalContent.className;
+        modalContent.classList.remove('animate-in', 'fade-in', 'zoom-in', 'duration-200');
+    }
+
     try {
-      // Create a clone of the card to modify styles for export without affecting the view
-      const cardClone = cardRef.current.cloneNode(true);
-      
-      // Force mobile-like width for the clone
-      cardClone.style.width = '375px'; 
-      cardClone.style.height = 'auto';
-      cardClone.style.position = 'fixed';
-      cardClone.style.top = '-9999px';
-      cardClone.style.left = '-9999px';
-      cardClone.style.transform = 'none';
-      cardClone.style.borderRadius = '0'; // Remove radius for cleaner full-screen look on mobile if needed, or keep it
-      
-      document.body.appendChild(cardClone);
-      
-      const canvas = await html2canvas(cardClone, { 
-        scale: 3, // Higher scale for better quality
-        backgroundColor: null, 
-        useCORS: true,
-        logging: false,
-        width: 375, // Explicitly set canvas width
-        windowWidth: 375 // Simulate window width
+      // Capture the visible element directly to avoid layout issues with off-screen clones
+      const dataUrl = await toPng(cardRef.current, { 
+        cacheBust: true,
+        backgroundColor: '#ffffff',
+        pixelRatio: 3, 
+        skipFonts: true, // Avoid SecurityError
+        filter: (node) => {
+            // Exclude elements that are explicitly marked to be ignored
+            return !node.dataset || node.dataset.html2canvasIgnore !== 'true';
+        }
       });
       
-      document.body.removeChild(cardClone); // Clean up
-
-      const image = canvas.toDataURL("image/png");
       const link = document.createElement('a');
-      link.href = image;
+      link.href = dataUrl;
       link.download = `wio-share-${currentDate.getFullYear()}-${currentDate.getMonth() + 1}.png`;
       link.click();
     } catch (err) {
       console.error("Export failed", err);
+      
+      // Fallback to html2canvas if html-to-image fails
+      try {
+          const html2canvas = (await import('html2canvas')).default;
+          const canvas = await html2canvas(cardRef.current, {
+              scale: 3,
+              backgroundColor: '#ffffff',
+              useCORS: true,
+              logging: false,
+              scrollY: 0,
+              onclone: (doc) => {
+                  const element = doc.querySelector('[data-html2canvas-ignore="true"]');
+                  if (element) element.remove();
+              }
+          });
+          const image = canvas.toDataURL("image/png");
+          const link = document.createElement('a');
+          link.href = image;
+          link.download = `wio-share-${currentDate.getFullYear()}-${currentDate.getMonth() + 1}.png`;
+          link.click();
+      } catch (fallbackErr) {
+          console.error("Fallback export failed", fallbackErr);
+      }
     } finally {
+      // Restore animation classes
+      if (modalContent && originalAnimationClasses) {
+         modalContent.className = originalAnimationClasses;
+      }
       setDownloading(false);
     }
   };
@@ -181,32 +207,48 @@ export default function ShareModal({
         <div 
             ref={cardRef} 
             className="w-full p-6 rounded-xl shadow-md overflow-hidden relative"
-            style={{ backgroundColor: '#ffffff', borderColor: '#f1f5f9', borderWidth: '1px', borderStyle: 'solid', color: '#0f172a' }}
+            style={{ 
+                backgroundColor: '#ffffff', 
+                borderColor: '#f1f5f9', 
+                borderWidth: '1px', 
+                borderStyle: 'solid', 
+                color: '#0f172a',
+                fontFeatureSettings: '"tnum"', // Use tabular nums to prevent jitter
+                fontVariantNumeric: 'tabular-nums'
+            }}
         >
-            {/* Background Decoration - using style for safe colors */}
+            {/* Background Decoration - using style for safe colors and absolute positioning instead of negative margins */}
             <div 
-                className="absolute top-0 right-0 -mt-10 -mr-10 w-32 h-32 rounded-full blur-2xl"
-                style={{ backgroundColor: 'rgba(19, 127, 236, 0.1)' }}
+                className="absolute w-32 h-32 rounded-full blur-2xl"
+                style={{ 
+                    backgroundColor: 'rgba(19, 127, 236, 0.1)',
+                    top: '-40px',
+                    right: '-40px'
+                }}
             ></div>
             <div 
-                className="absolute bottom-0 left-0 -mb-10 -ml-10 w-32 h-32 rounded-full blur-2xl"
-                style={{ backgroundColor: 'rgba(34, 197, 94, 0.1)' }}
+                className="absolute w-32 h-32 rounded-full blur-2xl"
+                style={{ 
+                    backgroundColor: 'rgba(34, 197, 94, 0.1)',
+                    bottom: '-40px',
+                    left: '-40px'
+                }}
             ></div>
 
             {/* Header */}
             <div className="flex justify-between items-start mb-6 relative z-10">
-                <div>
-                    <h2 className="text-2xl font-bold tracking-tight">{t('share_card_title').replace('{month}', monthName)}</h2>
-                    <p className="text-sm mt-1" style={{ color: '#64748b' }}>{t('website_name')}</p>
+                <div className="flex flex-col">
+                    <h2 className="text-2xl font-bold tracking-tight" style={{ lineHeight: '1.2' }}>{t('share_card_title').replace('{month}', monthName)}</h2>
+                    <p className="text-xs mt-2 font-medium tracking-wide uppercase" style={{ color: '#64748b', lineHeight: '1' }}>{t('website_name')}</p>
                 </div>
                 <div className="flex flex-col items-end">
                     <span 
-                        className="text-4xl font-bold"
-                        style={{ color: isBelowTarget ? '#ef4444' : '#22c55e' }}
+                        className="text-4xl font-bold block"
+                        style={{ color: isBelowTarget ? '#ef4444' : '#22c55e', lineHeight: '1' }}
                     >
                         {wioPercentage}%
                     </span>
-                    <span className="text-xs font-medium" style={{ color: '#94a3b8' }}>WIO SCORE</span>
+                    <span className="text-[10px] font-bold mt-1 tracking-wider block" style={{ color: '#94a3b8', lineHeight: '1' }}>WIO SCORE</span>
                 </div>
             </div>
 

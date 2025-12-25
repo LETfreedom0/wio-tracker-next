@@ -140,4 +140,20 @@ export const es = {
   export_data_title: 'Exportar datos',
   export_data_desc: 'Exportar registros como CSV.',
   export_btn: 'Exportar CSV',
+
+  // SEO Content
+  seo_title_1: '¿Qué es la Calculadora WIO?',
+  seo_desc_1: 'La Calculadora WIO es una herramienta especializada diseñada para entornos de trabajo híbrido. Ayuda a empleados y gerentes a rastrear los días de "Trabajo en Oficina" (WIO), calcular porcentajes de asistencia y asegurar el cumplimiento de las políticas de la empresa (por ejemplo, mandatos de regreso a la oficina).',
+  seo_title_2: 'Características Clave',
+  seo_feature_1: 'Seguimiento de Asistencia Fácil: Marque días como Oficina, Remoto, Vacaciones o Festivo con un solo clic.',
+  seo_feature_2: 'Porcentaje WIO en Tiempo Real: Vea instantáneamente si está cumpliendo con sus objetivos mensuales de asistencia a la oficina.',
+  seo_feature_3: 'Gestión de Licencias: Lleve un registro de sus Vacaciones Anuales, Bajas Médicas y otras cuotas de tiempo libre.',
+  seo_feature_4: 'Privacidad Primero: Los datos se almacenan localmente en su dispositivo por defecto, con sincronización en la nube opcional.',
+  seo_title_3: '¿Por qué usar WIO Tracker?',
+  seo_desc_3: 'En la era del trabajo híbrido, mantener un registro manual de los días de oficina puede ser tedioso. WIO Tracker simplifica este proceso, proporcionando un calendario visual claro y estadísticas detalladas para ayudarle a planificar su semana laboral de manera efectiva.',
+  seo_faq_title: 'Preguntas Frecuentes',
+  seo_faq_q1: '¿Es gratuita la Calculadora WIO?',
+  seo_faq_a1: 'Sí, las características básicas de la Calculadora WIO son completamente gratuitas.',
+  seo_faq_q2: '¿Están seguros mis datos?',
+  seo_faq_a2: 'Absolutamente. Por defecto, sus datos se almacenan en el almacenamiento local de su navegador. Si elige iniciar sesión, los datos se cifran y sincronizan de forma segura.',
 };

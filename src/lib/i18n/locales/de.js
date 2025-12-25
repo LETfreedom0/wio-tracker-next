@@ -140,4 +140,20 @@ export const de = {
   export_data_title: 'Daten exportieren',
   export_data_desc: 'Als CSV exportieren.',
   export_btn: 'CSV Exportieren',
+
+  // SEO Content
+  seo_title_1: 'Was ist der WIO-Rechner?',
+  seo_desc_1: 'Der WIO-Rechner ist ein spezialisiertes Tool für hybride Arbeitsumgebungen. Es hilft Mitarbeitern und Managern, "Work In Office" (WIO)-Tage zu verfolgen, Anwesenheitsprozentsätze zu berechnen und die Einhaltung von Unternehmensrichtlinien (z. B. Rückkehr ins Büro) sicherzustellen.',
+  seo_title_2: 'Hauptfunktionen',
+  seo_feature_1: 'Einfache Anwesenheitsverfolgung: Markieren Sie Tage als Büro, Remote, Urlaub oder Feiertag mit einem Klick.',
+  seo_feature_2: 'Echtzeit-WIO-Prozentsatz: Sehen Sie sofort, ob Sie Ihre monatlichen Büroanwesenheitsziele erreichen.',
+  seo_feature_3: 'Urlaubsverwaltung: Behalten Sie Ihren Jahresurlaub, Krankheitstage und andere Freizeitkontingente im Blick.',
+  seo_feature_4: 'Datenschutz zuerst: Daten werden standardmäßig lokal auf Ihrem Gerät gespeichert, mit optionaler Cloud-Synchronisierung.',
+  seo_title_3: 'Warum WIO Tracker verwenden?',
+  seo_desc_3: 'Im Zeitalter der hybriden Arbeit kann das manuelle Protokollieren von Bürotagen mühsam sein. WIO Tracker vereinfacht diesen Prozess und bietet einen klaren visuellen Kalender und detaillierte Statistiken, um Ihre Arbeitswoche effektiv zu planen.',
+  seo_faq_title: 'Häufig gestellte Fragen',
+  seo_faq_q1: 'Ist der WIO-Rechner kostenlos?',
+  seo_faq_a1: 'Ja, die Grundfunktionen des WIO-Rechners sind völlig kostenlos.',
+  seo_faq_q2: 'Sind meine Daten sicher?',
+  seo_faq_a2: 'Absolut. Standardmäßig werden Ihre Daten im lokalen Speicher Ihres Browsers gespeichert. Wenn Sie sich anmelden, werden die Daten verschlüsselt und sicher synchronisiert.',
 };
