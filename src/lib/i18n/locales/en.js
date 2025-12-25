@@ -140,6 +140,8 @@ export const en = {
   share_btn: 'Share',
   download_image: 'Save Image',
   share_card_title: 'My {month} WIO',
+  my: 'My',
+  share_rate_label: 'Office Attendance',
   scan_to_visit: 'Scan to use',
   website_name: 'WIO Tracker',
   website_url: 'www.wiotracker.xyz',
@@ -160,4 +162,6 @@ export const en = {
   seo_faq_a1: 'Yes, the basic features of WIO Calculator are completely free to use.',
   seo_faq_q2: 'Is my data secure?',
   seo_faq_a2: 'Absolutely. By default, your data is stored in your browser\'s local storage. If you choose to login, data is encrypted and synced securely.',
+  seo_faq_q3: 'How is the WIO percentage calculated?',
+  seo_faq_a3: 'WIO Percentage = (Office Days) / (Total Working Days - Leaves - Public Holidays). "Total Working Days" only includes Monday to Friday. If you mark "Annual Leave", "Sick Leave", "Unpaid Leave", or "Public Holiday", these days are excluded from the denominator and will not lower your attendance rate.',
 };

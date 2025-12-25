@@ -141,6 +141,18 @@ export const fr = {
   export_data_desc: 'Exporter vos enregistrements en CSV.',
   export_btn: 'Exporter CSV',
 
+  // Share
+  share_title: 'Partager mon WIO',
+  share_btn: 'Partager',
+  download_image: 'Enregistrer l\'image',
+  share_card_title: 'Mon WIO de {month}',
+  my: 'Mon',
+  share_rate_label: 'Présence au bureau',
+  scan_to_visit: 'Scanner pour utiliser',
+  website_name: 'WIO Tracker',
+  website_url: 'www.wiotracker.xyz',
+  slogan: 'Suivez votre rythme de travail',
+
   // SEO Content
   seo_title_1: 'Qu\'est-ce que le Calculateur WIO ?',
   seo_desc_1: 'Le Calculateur WIO est un outil spécialisé conçu pour les environnements de travail hybrides. Il aide les employés et les gestionnaires à suivre les jours de "Travail au Bureau" (WIO), à calculer les pourcentages de présence et à assurer la conformité aux politiques de l\'entreprise (par exemple, les mandats de retour au bureau).',
@@ -156,4 +168,6 @@ export const fr = {
   seo_faq_a1: 'Oui, les fonctionnalités de base du Calculateur WIO sont entièrement gratuites.',
   seo_faq_q2: 'Mes données sont-elles sécurisées ?',
   seo_faq_a2: 'Absolument. Par défaut, vos données sont stockées dans le stockage local de votre navigateur. Si vous choisissez de vous connecter, les données sont chiffrées et synchronisées en toute sécurité.',
+  seo_faq_q3: 'Comment est calculé le pourcentage WIO ?',
+  seo_faq_a3: 'Pourcentage WIO = (Jours au Bureau) / (Jours Ouvrés Totaux - Congés - Jours Fériés). Les "Jours Ouvrés Totaux" incluent uniquement du lundi au vendredi. Si vous marquez "Congés Annuels", "Arrêt Maladie", "Congé Sans Solde" ou "Jour Férié", ces jours sont exclus du dénominateur et ne réduiront pas votre taux de présence.',
 };

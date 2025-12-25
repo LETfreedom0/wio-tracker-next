@@ -141,6 +141,18 @@ export const es = {
   export_data_desc: 'Exportar registros como CSV.',
   export_btn: 'Exportar CSV',
 
+  // Share
+  share_title: 'Compartir mi WIO',
+  share_btn: 'Compartir',
+  download_image: 'Guardar imagen',
+  share_card_title: 'Mi WIO de {month}',
+  my: 'Mi',
+  share_rate_label: 'Asistencia a la oficina',
+  scan_to_visit: 'Escanear para usar',
+  website_name: 'WIO Tracker',
+  website_url: 'www.wiotracker.xyz',
+  slogan: 'Sigue tu ritmo de trabajo',
+
   // SEO Content
   seo_title_1: '¿Qué es la Calculadora WIO?',
   seo_desc_1: 'La Calculadora WIO es una herramienta especializada diseñada para entornos de trabajo híbrido. Ayuda a empleados y gerentes a rastrear los días de "Trabajo en Oficina" (WIO), calcular porcentajes de asistencia y asegurar el cumplimiento de las políticas de la empresa (por ejemplo, mandatos de regreso a la oficina).',
@@ -156,4 +168,6 @@ export const es = {
   seo_faq_a1: 'Sí, las características básicas de la Calculadora WIO son completamente gratuitas.',
   seo_faq_q2: '¿Están seguros mis datos?',
   seo_faq_a2: 'Absolutamente. Por defecto, sus datos se almacenan en el almacenamiento local de su navegador. Si elige iniciar sesión, los datos se cifran y sincronizan de forma segura.',
+  seo_faq_q3: '¿Cómo se calcula el porcentaje de WIO?',
+  seo_faq_a3: 'Porcentaje WIO = (Días en Oficina) / (Días Laborables Totales - Vacaciones - Festivos). "Días Laborables Totales" solo incluye de lunes a viernes. Si marca "Vacaciones Anuales", "Baja por Enfermedad", "Permiso no Retribuido" o "Festivo", estos días se excluyen del denominador y no reducirán su tasa de asistencia.',
 };
