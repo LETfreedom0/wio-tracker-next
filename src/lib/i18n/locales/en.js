@@ -2,6 +2,7 @@ export const en = {
   // Navigation
   home: 'Home',
   settings: 'Settings',
+  contact_author: 'Contact Author',
   login: 'Login',
   logout: 'Logout',
   data_synced: 'Data synced to cloud',
