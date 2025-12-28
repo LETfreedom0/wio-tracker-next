@@ -250,17 +250,17 @@ export default function ShareModal({
 
             {/* Header */}
             <div className="flex justify-between items-start mb-6 relative z-10">
-                <div className="flex flex-col">
-                    <span className="text-4xl font-extrabold tracking-tight block capitalize" style={{ color: '#334155', lineHeight: '1.1' }}>
+                 <div className="flex flex-col">
+                    <span className="text-3xl sm:text-4xl font-extrabold tracking-tight block capitalize" style={{ color: '#334155', lineHeight: '1.1' }}>
                         {language === 'zh' ? monthName : monthNameOnly}
                     </span>
-                    <span className="text-lg font-bold tracking-tight mt-1 block" style={{ color: '#64748b' }}>
+                    <span className="text-base sm:text-lg font-bold tracking-tight mt-1 block" style={{ color: '#64748b' }}>
                         {language === 'zh' ? t('monthly_wio') : `${currentDate.getFullYear()} WIO`}
                     </span>
                 </div>
                 <div className="flex flex-col items-end">
                     <span 
-                        className="text-6xl font-bold block"
+                        className="text-5xl sm:text-6xl font-bold block"
                         style={{ color: isBelowTarget ? '#ef4444' : '#22c55e', lineHeight: '0.8' }}
                     >
                         {wioPercentage}%
