@@ -56,3 +56,5 @@ export const encodeStatus = (amKey, pmKey) => {
   
   return 100 + am * 10 + pm;
 };
+
+export const SUPPORT_EMAIL = 'letgsts@foxmail.com';

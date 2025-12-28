@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { supabase } from '../../lib/supabaseClient';
 import { useRouter, usePathname } from 'next/navigation';
 import { useLanguage } from '../context/LanguageContext';
+import { SUPPORT_EMAIL } from '../../lib/constants';
 
 export default function Navigation() {
   const [user, setUser] = useState(null);
@@ -49,9 +50,16 @@ export default function Navigation() {
             <nav className="hidden md:flex items-center gap-4" role="navigation">
               <Link href="/" className={`text-sm font-medium ${pathname === '/' ? 'text-primary' : 'text-subtle hover:text-primary transition-colors'}`}>{t('home')}</Link>
               <Link href="/settings" className={`text-sm font-medium ${pathname === '/settings' ? 'text-primary' : 'text-subtle hover:text-primary transition-colors'}`}>{t('settings')}</Link>
+              <Link href={`mailto:${SUPPORT_EMAIL}?subject=WIO Tracker Feedback`} className="text-sm font-medium text-subtle hover:text-primary transition-colors">{t('contact_author')}</Link>
             </nav>
           </div>
           <div className="flex items-center gap-4">
+            <Link href={`mailto:${SUPPORT_EMAIL}?subject=WIO Tracker Feedback`} className="md:hidden text-subtle hover:text-primary transition-colors p-1" title={t('contact_author')} aria-label={t('contact_author')}>
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <rect width="20" height="16" x="2" y="4" rx="2"></rect>
+                <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+              </svg>
+            </Link>
             <Link href="/settings" className={`md:hidden ${pathname === '/settings' ? 'text-primary' : 'text-subtle hover:text-primary transition-colors'} p-1`} title={t('settings')} aria-label={t('settings')}>
               <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
                 <path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.47a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>

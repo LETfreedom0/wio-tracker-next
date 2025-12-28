@@ -2,6 +2,7 @@ export const zh = {
   // Navigation
   home: '首页',
   settings: '设置',
+  contact_author: '联系作者',
   login: '登录',
   logout: '退出',
   data_synced: '数据云端同步',
