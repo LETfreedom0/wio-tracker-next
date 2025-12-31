@@ -3,10 +3,12 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Navigation from './components/Navigation';
 import ShareModal from './components/ShareModal';
+import ScheduleModal from './components/ScheduleModal';
 import { supabase } from '../lib/supabaseClient';
 import { useLanguage } from './context/LanguageContext';
 import { STATUS_CODES, CODE_TO_KEY, KEY_TO_CODE, decodeStatus, encodeStatus } from '../lib/constants';
 import { getHolidayData } from '../lib/holidays';
+import { fetchSchedules } from '../lib/schedules';
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -26,6 +28,11 @@ export default function Home() {
   const [showCombinedConfig, setShowCombinedConfig] = useState(false);
   const [combinedConfig, setCombinedConfig] = useState({ am: 'office', pm: 'remote' });
   
+  // Schedule State
+  const [schedules, setSchedules] = useState({});
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [currentScheduleDate, setCurrentScheduleDate] = useState(new Date());
+
   // OT Modal State
   const [showOtModal, setShowOtModal] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -61,6 +68,67 @@ export default function Home() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Fetch Schedules when user or month changes
+  useEffect(() => {
+    if (!user) return;
+    loadSchedules();
+  }, [user, currentDate]);
+
+  // Check for today's schedules and notify
+  useEffect(() => {
+    if (!user || Object.keys(schedules).length === 0) return;
+
+    const todayStr = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
+    const todaySchedules = schedules[todayStr];
+
+    if (todaySchedules && todaySchedules.some(s => !s.is_completed)) {
+        const pendingCount = todaySchedules.filter(s => !s.is_completed).length;
+        
+        // Request notification permission if default
+        if (Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+        // Send notification if granted
+        if (Notification.permission === 'granted') {
+            new Notification(t('schedule_reminder_title') || 'Schedule Reminder', {
+                body: t('schedule_reminder_body', { count: pendingCount }) || `You have ${pendingCount} pending tasks today.`,
+                icon: '/favicon.ico'
+            });
+        }
+    }
+  }, [schedules, user, t]);
+
+  const loadSchedules = async () => {
+    if (!user) return;
+    
+    // Calculate start and end of current month view (including padding days if we wanted, but month is fine for now)
+    // Actually, to be safe, let's just fetch current month.
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+    const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+    const lastDay = new Date(year, month, 0).getDate();
+    const endDate = `${year}-${String(month).padStart(2, '0')}-${lastDay}`;
+
+    try {
+      const data = await fetchSchedules(user.id, startDate, endDate);
+      
+      // Group by date
+      const newSchedules = {};
+      if (data) {
+        data.forEach(item => {
+          if (!newSchedules[item.date]) {
+            newSchedules[item.date] = [];
+          }
+          newSchedules[item.date].push(item);
+        });
+      }
+      setSchedules(newSchedules);
+    } catch (error) {
+      console.error('Error loading schedules:', error);
+    }
+  };
 
   const loadDataFromLocal = () => {
     const savedAttendance = localStorage.getItem('attendanceData');
@@ -403,6 +471,13 @@ export default function Home() {
     setShowOtModal(false);
   };
 
+  const openScheduleModal = (day, e) => {
+    e && e.stopPropagation();
+    const targetDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    setCurrentScheduleDate(targetDate);
+    setShowScheduleModal(true);
+  };
+
   // 获取状态样式
   const getStatusStyle = (statusObj) => {
     const { am, pm } = statusObj;
@@ -583,6 +658,17 @@ export default function Home() {
       <div className="flex justify-between items-start">
         <div className="flex items-center gap-2">
             <h3 className="font-bold text-lg">{t('monthly_wio')}</h3>
+            <button 
+                onClick={() => {
+                    setCurrentScheduleDate(new Date());
+                    setShowScheduleModal(true);
+                }}
+                className="flex items-center gap-1 text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-md hover:bg-purple-200 transition-colors"
+                title={t('schedule_title')}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span className="font-medium">{t('schedule_title')}</span>
+            </button>
             <button 
                 onClick={() => setIsShareModalOpen(true)}
                 className="flex items-center gap-1 text-xs bg-primary/10 text-primary px-2 py-1 rounded-md hover:bg-primary/20 transition-colors"
@@ -1044,6 +1130,17 @@ export default function Home() {
         publicHolidays={publicHolidays}
         t={t}
         language={language}
+      />
+
+      {/* Schedule Modal */}
+      <ScheduleModal
+        isOpen={showScheduleModal}
+        onClose={() => setShowScheduleModal(false)}
+        date={currentScheduleDate}
+        schedules={schedules[`${currentScheduleDate.getFullYear()}-${String(currentScheduleDate.getMonth() + 1).padStart(2, '0')}-${String(currentScheduleDate.getDate()).padStart(2, '0')}`]}
+        userId={user?.id}
+        onScheduleChange={loadSchedules}
+        t={t}
       />
     </div>
   );

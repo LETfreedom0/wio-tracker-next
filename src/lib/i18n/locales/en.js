@@ -165,4 +165,15 @@ export const en = {
   seo_faq_a2: 'Absolutely. By default, your data is stored in your browser\'s local storage. If you choose to login, data is encrypted and synced securely.',
   seo_faq_q3: 'How is the WIO percentage calculated?',
   seo_faq_a3: 'WIO Percentage = (Office Days) / (Total Working Days - Leaves - Public Holidays). "Total Working Days" only includes Monday to Friday. If you mark "Annual Leave", "Sick Leave", "Unpaid Leave", or "Public Holiday", these days are excluded from the denominator and will not lower your attendance rate.',
+  
+  // Schedule
+  schedule_title: 'Schedules',
+  schedule_reminder_title: 'Daily Reminder',
+  schedule_reminder_body: 'You have {count} pending tasks today.',
+  no_schedules: 'No schedules yet',
+  add_schedule_placeholder: 'Add a new task...',
+  schedule_add_error: 'Failed to add schedule',
+  schedule_delete_confirm: 'Are you sure you want to delete this schedule?',
+  login_required_schedule: 'Please login to manage schedules',
+  delete: 'Delete',
 };
