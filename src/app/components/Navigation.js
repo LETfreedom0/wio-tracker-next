@@ -109,6 +109,8 @@ export default function Navigation() {
                     { code: 'ar', label: 'العربية' },
                     { code: 'pt', label: 'Português' },
                     { code: 'de', label: 'Deutsch' },
+                    { code: 'ja', label: '日本語' },
+                    { code: 'ko', label: '한국어' },
                   ].map((langOption) => (
                     <Menu.Item key={langOption.code}>
                       {({ active }) => (

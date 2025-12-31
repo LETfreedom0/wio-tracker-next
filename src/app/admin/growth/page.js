@@ -61,6 +61,23 @@ export default function UserGrowthPage() {
   const maxCount = Math.max(...data.map(d => d.count), 1);
   const totalUsers = data.reduce((acc, curr) => acc + curr.count, 0);
 
+  // Helper for country colors
+  const getCountryColor = (country) => {
+    const palette = {
+        'CN': '#ef4444', // red-500
+        'US': '#3b82f6', // blue-500
+        'GB': '#6366f1', // indigo-500
+        'DE': '#eab308', // yellow-500
+        'FR': '#a855f7', // purple-500
+        'JP': '#ec4899', // pink-500
+        'UNKNOWN': '#9ca3af' // gray-400
+    };
+    if (palette[country]) return palette[country];
+    const colors = ['#10b981', '#14b8a6', '#f97316', '#06b6d4', '#84cc16'];
+    const hash = country.split('').reduce((acc, char) => char.charCodeAt(0) + ((acc << 5) - acc), 0);
+    return colors[Math.abs(hash) % colors.length];
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       <Navigation />
@@ -127,19 +144,54 @@ export default function UserGrowthPage() {
 
                 {/* Chart Section */}
                 <div className="bg-white shadow rounded-lg p-6 mb-8">
-                    <h3 className="text-lg leading-6 font-medium text-gray-900 mb-6">Daily New Users</h3>
+                    <div className="flex justify-between items-center mb-6">
+                        <h3 className="text-lg leading-6 font-medium text-gray-900">Daily New Users</h3>
+                        <div className="flex gap-2 text-xs flex-wrap">
+                            <div className="flex items-center"><span className="w-2 h-2 rounded-full bg-red-500 mr-1" style={{backgroundColor: '#ef4444'}}></span>CN</div>
+                            <div className="flex items-center"><span className="w-2 h-2 rounded-full bg-blue-500 mr-1" style={{backgroundColor: '#3b82f6'}}></span>US</div>
+                            <div className="flex items-center"><span className="w-2 h-2 rounded-full bg-indigo-500 mr-1" style={{backgroundColor: '#6366f1'}}></span>GB</div>
+                            <div className="flex items-center"><span className="w-2 h-2 rounded-full bg-yellow-500 mr-1" style={{backgroundColor: '#eab308'}}></span>DE</div>
+                            <div className="flex items-center"><span className="w-2 h-2 rounded-full bg-gray-400 mr-1" style={{backgroundColor: '#9ca3af'}}></span>Other</div>
+                        </div>
+                    </div>
                     
                     {data.length > 0 ? (
-                        <div className="h-64 flex items-end space-x-2 overflow-x-auto pb-4 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+                        <div className="h-64 flex items-end space-x-2 overflow-x-auto pb-4 pt-10 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 relative">
                             {data.map((item) => (
-                                <div key={item.date} className="flex flex-col items-center group min-w-[40px] flex-shrink-0">
+                                <div key={item.date} className="flex flex-col items-center group min-w-[40px] flex-shrink-0 h-full justify-end cursor-pointer">
                                     <div 
-                                        className="w-8 bg-indigo-500 rounded-t hover:bg-indigo-600 transition-all relative"
-                                        style={{ height: `${Math.max((item.count / maxCount) * 100, 4)}%` }} // Min height for visibility
+                                        className="w-8 rounded-t overflow-hidden relative flex flex-col-reverse"
+                                        style={{ height: `${Math.max((item.count / maxCount) * 80, 4)}%` }} // Leave space for date labels
                                     >
-                                        <div className="opacity-0 group-hover:opacity-100 absolute -top-10 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white text-xs rounded py-1 px-2 z-10 whitespace-nowrap shadow-lg transition-opacity duration-200">
-                                            <div className="font-semibold">{item.count} users</div>
-                                            <div className="text-gray-300 text-[10px]">{item.date}</div>
+                                        {/* Segments */}
+                                        {item.countries && Object.entries(item.countries).map(([country, count]) => (
+                                            <div 
+                                                key={country}
+                                                style={{ height: `${(count / item.count) * 100}%`, backgroundColor: getCountryColor(country) }}
+                                                className="w-full transition-all hover:brightness-110"
+                                            />
+                                        ))}
+                                        {!item.countries && <div className="w-full h-full bg-indigo-500"></div>}
+
+                                        {/* Tooltip */}
+                                        <div className="opacity-0 group-hover:opacity-100 absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 bg-gray-900 text-white text-xs rounded py-2 px-3 z-50 whitespace-nowrap shadow-lg transition-opacity duration-200 pointer-events-none min-w-[120px]">
+                                            <div className="font-bold text-center border-b border-gray-700 pb-1 mb-1">{item.date}</div>
+                                            <div className="font-semibold text-center mb-1">{item.count} Total Users</div>
+                                            {item.countries && (
+                                                <div className="space-y-1">
+                                                    {Object.entries(item.countries)
+                                                        .sort(([,a], [,b]) => b - a) // Sort by count desc
+                                                        .map(([code, c]) => (
+                                                        <div key={code} className="flex justify-between items-center text-[10px] gap-3">
+                                                            <div className="flex items-center gap-1">
+                                                                <span className="w-2 h-2 rounded-full" style={{backgroundColor: getCountryColor(code)}}></span>
+                                                                <span>{code}</span>
+                                                            </div>
+                                                            <span>{c}</span>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
                                             {/* Arrow */}
                                             <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-gray-900"></div>
                                         </div>

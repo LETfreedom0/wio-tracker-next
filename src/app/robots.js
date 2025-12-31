@@ -1,3 +1,5 @@
+import { SITE_URL } from '../lib/constants';
+
 export default function robots() {
   return {
     rules: [
@@ -12,6 +14,6 @@ export default function robots() {
         disallow: '/private/',
       },
     ],
-    sitemap: 'https://wiotracker.xyz/sitemap.xml',
+    sitemap: `${SITE_URL}/sitemap.xml`,
   }
 }
