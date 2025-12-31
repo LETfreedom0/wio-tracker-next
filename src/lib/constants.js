@@ -58,3 +58,4 @@ export const encodeStatus = (amKey, pmKey) => {
 };
 
 export const SUPPORT_EMAIL = 'letgsts@foxmail.com';
+export const SITE_URL = 'https://wiotracker.xyz';

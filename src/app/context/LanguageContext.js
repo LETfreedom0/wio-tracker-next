@@ -9,6 +9,8 @@ import { es } from '../../lib/i18n/locales/es';
 import { ar } from '../../lib/i18n/locales/ar';
 import { pt } from '../../lib/i18n/locales/pt';
 import { de } from '../../lib/i18n/locales/de';
+import { ja } from '../../lib/i18n/locales/ja';
+import { ko } from '../../lib/i18n/locales/ko';
 
 const LanguageContext = createContext();
 
@@ -21,6 +23,8 @@ const translations = {
   ar,
   pt,
   de,
+  ja,
+  ko,
   english: en, // Alias for legacy support
   chinese: zh, // Alias for legacy support
 };

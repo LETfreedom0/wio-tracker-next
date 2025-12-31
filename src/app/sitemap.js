@@ -1,5 +1,7 @@
+import { SITE_URL } from '../lib/constants';
+
 export default function sitemap() {
-  const baseUrl = 'https://wiotracker.xyz';
+  const baseUrl = SITE_URL;
   // Google 建议仅在内容实际发生变化时更新 lastModified
   // 使用固定的日期而不是 new Date()，以避免 Google 忽略频繁变动但内容未变的 lastmod
   const lastModified = new Date('2025-12-25');

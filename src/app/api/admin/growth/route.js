@@ -81,6 +81,19 @@ export async function GET(request) {
       throw error;
     }
 
+    // 获取用户设置以获取国家信息
+    // Fetch user settings to get country info
+    const { data: settings } = await supabaseAdmin
+        .from('user_settings')
+        .select('user_id, country');
+
+    const countryMap = {}; // user_id -> country
+    if (settings) {
+        settings.forEach(s => {
+            if (s.country) countryMap[s.user_id] = s.country;
+        });
+    }
+
     // 按日期聚合数据
     // Aggregate data by date
     const growthMap = {};
@@ -93,10 +106,23 @@ export async function GET(request) {
     users.forEach(user => {
       // 提取日期部分 (YYYY-MM-DD)
       const date = new Date(user.created_at).toISOString().split('T')[0];
+      
+      // Determine country: 1. user_settings, 2. metadata, 3. Unknown
+      let country = countryMap[user.id] || user.user_metadata?.country || 'Unknown';
+      // Normalize country (optional, e.g. uppercase)
+      if (!country || typeof country !== 'string') country = 'Unknown';
+      country = country.trim().toUpperCase() || 'UNKNOWN';
+      if (country === '') country = 'UNKNOWN';
+
       if (!growthMap[date]) {
-        growthMap[date] = 0;
+        growthMap[date] = { count: 0, countries: {} };
       }
-      growthMap[date]++;
+      growthMap[date].count++;
+      
+      if (!growthMap[date].countries[country]) {
+          growthMap[date].countries[country] = 0;
+      }
+      growthMap[date].countries[country]++;
     });
 
     // 转换为数组并按日期排序
@@ -105,7 +131,8 @@ export async function GET(request) {
       .sort()
       .map(date => ({
         date,
-        count: growthMap[date]
+        count: growthMap[date].count,
+        countries: growthMap[date].countries
       }));
 
     return NextResponse.json({ data: growthData });
