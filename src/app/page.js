@@ -4,6 +4,8 @@ import { useState, useEffect, useMemo, useCallback } from 'react';
 import Navigation from './components/Navigation';
 import ShareModal from './components/ShareModal';
 import ScheduleModal from './components/ScheduleModal';
+import MobileStatusView from './components/MobileStatusView';
+import StatusButtons from './components/StatusButtons';
 import { supabase } from '../lib/supabaseClient';
 import { useLanguage } from './context/LanguageContext';
 import { STATUS_CODES, CODE_TO_KEY, KEY_TO_CODE, decodeStatus, encodeStatus } from '../lib/constants';
@@ -325,12 +327,16 @@ export default function Home() {
   };
 
   // 切换日期状态
-  const toggleDateStatus = (day) => {
+  const toggleDateStatus = (day, specificStatus = null) => {
     const dateKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}-${day}`;
     let newValue;
 
+    // 如果指定了具体状态（例如来自 MobileStatusView），直接使用
+    if (specificStatus) {
+      newValue = specificStatus;
+    } 
     // 如果选择了图例，则直接应用该状态
-    if (selectedLegend) {
+    else if (selectedLegend) {
       if (selectedLegend === 'ot') {
         setCurrentOtDate(day);
         setOtDurationInput(otData[dateKey] ? String(otData[dateKey]) : '1');
@@ -697,12 +703,35 @@ export default function Home() {
     </div>
   );
 
+  const todayDateObj = new Date();
+  const todayKey = `${todayDateObj.getFullYear()}-${todayDateObj.getMonth()}-${todayDateObj.getDate()}`;
+  const todayStatus = attendanceData[todayKey] || { am: 'none', pm: 'none' };
+
   return (
-    <div className="flex flex-col min-h-screen bg-background font-display text-foreground">
+    <div className="flex flex-col h-screen bg-background font-display text-foreground overflow-hidden">
       <Navigation />
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 flex-grow">
+      <div className="flex-grow flex flex-col lg:block overflow-hidden h-full">
+        <div className="lg:contents flex overflow-x-auto snap-x snap-mandatory w-full h-full">
+            
+            {/* Page 1: Status View (Mobile Only) */}
+            <div className="lg:hidden snap-center w-full flex-shrink-0 h-full overflow-y-auto bg-background">
+                <MobileStatusView 
+                    currentDate={todayDateObj}
+                    status={todayStatus}
+                    onStatusChange={(newStatus) => {
+                        const newAttendance = { ...attendanceData, [todayKey]: newStatus };
+                        setAttendanceData(newAttendance);
+                        localStorage.setItem('attendanceData', JSON.stringify(newAttendance));
+                        if (user) saveStatusToSupabase(todayKey, newStatus, otData[todayKey]);
+                    }}
+                    t={t}
+                    language={language}
+                />
+            </div>
+
+            {/* Main Content */}
+            <main className="snap-center w-full flex-shrink-0 lg:w-auto h-full lg:h-auto overflow-y-auto lg:overflow-visible container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 flex-grow">
         <div className="max-w-7xl mx-auto">
           <div className="mb-4 sm:mb-8">
             <h1 className="text-3xl font-bold tracking-tight">{t('wio_status_title')}</h1>
@@ -719,7 +748,24 @@ export default function Home() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
             {/* Calendar Section */}
-            <div className="lg:col-span-2 bg-card p-4 sm:p-6 rounded-lg border border-border shadow-sm">
+            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+              {/* Quick Status Buttons (Visible on Desktop) */}
+              <div className="hidden lg:block bg-card p-4 sm:p-6 rounded-lg border border-border shadow-sm">
+                <h3 className="font-bold text-lg mb-4">{t('today_status') || 'Today Status'}</h3>
+                <StatusButtons 
+                    status={todayStatus}
+                    onStatusChange={(newStatus) => {
+                        const newAttendance = { ...attendanceData, [todayKey]: newStatus };
+                        setAttendanceData(newAttendance);
+                        localStorage.setItem('attendanceData', JSON.stringify(newAttendance));
+                        if (user) saveStatusToSupabase(todayKey, newStatus, otData[todayKey]);
+                    }}
+                    t={t}
+                    layout="horizontal"
+                />
+              </div>
+
+              <div className="bg-card p-4 sm:p-6 rounded-lg border border-border shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold">{getMonthName()}</h3>
                 <div className="flex items-center gap-2">
@@ -806,7 +852,7 @@ export default function Home() {
                 })}
               </div>
 
-
+              </div>
 
               {/* Legend (Moved from sidebar) */}
               <div className="mt-4 sm:mt-6 bg-card p-3 sm:p-4 rounded-lg border border-border shadow-sm">
@@ -1060,6 +1106,8 @@ export default function Home() {
           </div>
         </div>
       </main>
+      </div>
+      </div>
       {/* OT Duration Modal */}
       {showOtModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">

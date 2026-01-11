@@ -35,7 +35,7 @@ export default function Navigation() {
   };
 
   return (
-    <header className="sticky top-0 z-10 bg-card/80 backdrop-blur-sm border-b border-border">
+    <header className="sticky top-0 z-10 bg-card/95 backdrop-blur-sm border-b border-border">
       <div className="container mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           <div className="flex items-center gap-6">
@@ -99,7 +99,10 @@ export default function Navigation() {
                 leaveFrom="transform opacity-100 scale-100"
                 leaveTo="transform opacity-0 scale-95"
               >
-                <Menu.Items className="absolute right-0 z-20 mt-2 w-40 origin-top-right rounded-md bg-card py-1 shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none border border-border overflow-y-auto max-h-96">
+                <Menu.Items 
+                  style={{ backgroundColor: '#ffffff' }}
+                  className="absolute right-0 z-50 mt-2 w-40 origin-top-right rounded-md bg-white py-1 shadow-xl ring-1 ring-black ring-opacity-10 focus:outline-none border border-border overflow-y-auto max-h-96 isolate"
+                >
                   {[
                     { code: 'en', label: 'English' },
                     { code: 'zh', label: '中文' },
