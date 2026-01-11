@@ -7,7 +7,7 @@ import Navigation from '../components/Navigation';
 import Input from '../components/Input';
 import { useLanguage } from '../context/LanguageContext';
 import { countries } from '../../lib/countries';
-import { GlobeAltIcon, UserIcon, StarIcon, EnvelopeIcon } from '@heroicons/react/24/solid';
+import { GlobeAltIcon, UserIcon, StarIcon, EnvelopeIcon, InformationCircleIcon } from '@heroicons/react/24/solid';
 import { encodeStatus } from '../../lib/constants';
 
 export default function Settings() {
@@ -270,7 +270,7 @@ export default function Settings() {
           {/* Info Banner */}
           <div className="bg-primary/5 border border-primary/10 rounded-xl p-4 flex items-start gap-4">
             <div className="p-2 bg-primary/10 rounded-full shrink-0">
-              <span className="material-symbols-outlined text-primary text-[20px] leading-none">info</span>
+              <InformationCircleIcon className="h-5 w-5 text-primary" aria-hidden="true" />
             </div>
             <div className="flex-1">
               <h4 className="text-sm font-semibold text-foreground">

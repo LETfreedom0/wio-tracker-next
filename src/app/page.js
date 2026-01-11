@@ -3,10 +3,14 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import Navigation from './components/Navigation';
 import ShareModal from './components/ShareModal';
+import ScheduleModal from './components/ScheduleModal';
+import MobileStatusView from './components/MobileStatusView';
+import StatusButtons from './components/StatusButtons';
 import { supabase } from '../lib/supabaseClient';
 import { useLanguage } from './context/LanguageContext';
 import { STATUS_CODES, CODE_TO_KEY, KEY_TO_CODE, decodeStatus, encodeStatus } from '../lib/constants';
 import { getHolidayData } from '../lib/holidays';
+import { fetchSchedules } from '../lib/schedules';
 
 export default function Home() {
   const [currentDate, setCurrentDate] = useState(new Date());
@@ -26,6 +30,11 @@ export default function Home() {
   const [showCombinedConfig, setShowCombinedConfig] = useState(false);
   const [combinedConfig, setCombinedConfig] = useState({ am: 'office', pm: 'remote' });
   
+  // Schedule State
+  const [schedules, setSchedules] = useState({});
+  const [showScheduleModal, setShowScheduleModal] = useState(false);
+  const [currentScheduleDate, setCurrentScheduleDate] = useState(new Date());
+
   // OT Modal State
   const [showOtModal, setShowOtModal] = useState(false);
   const [isShareModalOpen, setIsShareModalOpen] = useState(false);
@@ -61,6 +70,67 @@ export default function Home() {
 
     return () => subscription.unsubscribe();
   }, []);
+
+  // Fetch Schedules when user or month changes
+  useEffect(() => {
+    if (!user) return;
+    loadSchedules();
+  }, [user, currentDate]);
+
+  // Check for today's schedules and notify
+  useEffect(() => {
+    if (!user || Object.keys(schedules).length === 0) return;
+
+    const todayStr = `${new Date().getFullYear()}-${String(new Date().getMonth() + 1).padStart(2, '0')}-${String(new Date().getDate()).padStart(2, '0')}`;
+    const todaySchedules = schedules[todayStr];
+
+    if (todaySchedules && todaySchedules.some(s => !s.is_completed)) {
+        const pendingCount = todaySchedules.filter(s => !s.is_completed).length;
+        
+        // Request notification permission if default
+        if (Notification.permission === 'default') {
+            Notification.requestPermission();
+        }
+
+        // Send notification if granted
+        if (Notification.permission === 'granted') {
+            new Notification(t('schedule_reminder_title') || 'Schedule Reminder', {
+                body: t('schedule_reminder_body', { count: pendingCount }) || `You have ${pendingCount} pending tasks today.`,
+                icon: '/favicon.ico'
+            });
+        }
+    }
+  }, [schedules, user, t]);
+
+  const loadSchedules = async () => {
+    if (!user) return;
+    
+    // Calculate start and end of current month view (including padding days if we wanted, but month is fine for now)
+    // Actually, to be safe, let's just fetch current month.
+    const year = currentDate.getFullYear();
+    const month = currentDate.getMonth() + 1;
+    const startDate = `${year}-${String(month).padStart(2, '0')}-01`;
+    const lastDay = new Date(year, month, 0).getDate();
+    const endDate = `${year}-${String(month).padStart(2, '0')}-${lastDay}`;
+
+    try {
+      const data = await fetchSchedules(user.id, startDate, endDate);
+      
+      // Group by date
+      const newSchedules = {};
+      if (data) {
+        data.forEach(item => {
+          if (!newSchedules[item.date]) {
+            newSchedules[item.date] = [];
+          }
+          newSchedules[item.date].push(item);
+        });
+      }
+      setSchedules(newSchedules);
+    } catch (error) {
+      console.error('Error loading schedules:', error);
+    }
+  };
 
   const loadDataFromLocal = () => {
     const savedAttendance = localStorage.getItem('attendanceData');
@@ -257,12 +327,16 @@ export default function Home() {
   };
 
   // 切换日期状态
-  const toggleDateStatus = (day) => {
+  const toggleDateStatus = (day, specificStatus = null) => {
     const dateKey = `${currentDate.getFullYear()}-${currentDate.getMonth()}-${day}`;
     let newValue;
 
+    // 如果指定了具体状态（例如来自 MobileStatusView），直接使用
+    if (specificStatus) {
+      newValue = specificStatus;
+    } 
     // 如果选择了图例，则直接应用该状态
-    if (selectedLegend) {
+    else if (selectedLegend) {
       if (selectedLegend === 'ot') {
         setCurrentOtDate(day);
         setOtDurationInput(otData[dateKey] ? String(otData[dateKey]) : '1');
@@ -401,6 +475,13 @@ export default function Home() {
     }
     
     setShowOtModal(false);
+  };
+
+  const openScheduleModal = (day, e) => {
+    e && e.stopPropagation();
+    const targetDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), day);
+    setCurrentScheduleDate(targetDate);
+    setShowScheduleModal(true);
   };
 
   // 获取状态样式
@@ -584,6 +665,17 @@ export default function Home() {
         <div className="flex items-center gap-2">
             <h3 className="font-bold text-lg">{t('monthly_wio')}</h3>
             <button 
+                onClick={() => {
+                    setCurrentScheduleDate(new Date());
+                    setShowScheduleModal(true);
+                }}
+                className="flex items-center gap-1 text-xs bg-purple-100 text-purple-600 px-2 py-1 rounded-md hover:bg-purple-200 transition-colors"
+                title={t('schedule_title')}
+            >
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                <span className="font-medium">{t('schedule_title')}</span>
+            </button>
+            <button 
                 onClick={() => setIsShareModalOpen(true)}
                 className="flex items-center gap-1 text-xs bg-primary/10 text-primary px-2 py-1 rounded-md hover:bg-primary/20 transition-colors"
                 title={t('share_title')}
@@ -611,12 +703,35 @@ export default function Home() {
     </div>
   );
 
+  const todayDateObj = new Date();
+  const todayKey = `${todayDateObj.getFullYear()}-${todayDateObj.getMonth()}-${todayDateObj.getDate()}`;
+  const todayStatus = attendanceData[todayKey] || { am: 'none', pm: 'none' };
+
   return (
-    <div className="flex flex-col min-h-screen bg-background font-display text-foreground">
+    <div className="flex flex-col h-screen bg-background font-display text-foreground overflow-hidden">
       <Navigation />
 
-      {/* Main Content */}
-      <main className="container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 flex-grow">
+      <div className="flex-grow flex flex-col lg:block overflow-hidden h-full">
+        <div className="lg:contents flex overflow-x-auto snap-x snap-mandatory w-full h-full">
+            
+            {/* Page 1: Status View (Mobile Only) */}
+            <div className="lg:hidden snap-center w-full flex-shrink-0 h-full overflow-y-auto bg-background">
+                <MobileStatusView 
+                    currentDate={todayDateObj}
+                    status={todayStatus}
+                    onStatusChange={(newStatus) => {
+                        const newAttendance = { ...attendanceData, [todayKey]: newStatus };
+                        setAttendanceData(newAttendance);
+                        localStorage.setItem('attendanceData', JSON.stringify(newAttendance));
+                        if (user) saveStatusToSupabase(todayKey, newStatus, otData[todayKey]);
+                    }}
+                    t={t}
+                    language={language}
+                />
+            </div>
+
+            {/* Main Content */}
+            <main className="snap-center w-full flex-shrink-0 lg:w-auto h-full lg:h-auto overflow-y-auto lg:overflow-visible container mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8 flex-grow">
         <div className="max-w-7xl mx-auto">
           <div className="mb-4 sm:mb-8">
             <h1 className="text-3xl font-bold tracking-tight">{t('wio_status_title')}</h1>
@@ -633,7 +748,24 @@ export default function Home() {
 
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-4 sm:gap-8">
             {/* Calendar Section */}
-            <div className="lg:col-span-2 bg-card p-4 sm:p-6 rounded-lg border border-border shadow-sm">
+            <div className="lg:col-span-2 space-y-4 sm:space-y-6">
+              {/* Quick Status Buttons (Visible on Desktop) */}
+              <div className="hidden lg:block bg-card p-4 sm:p-6 rounded-lg border border-border shadow-sm">
+                <h3 className="font-bold text-lg mb-4">{t('today_status') || 'Today Status'}</h3>
+                <StatusButtons 
+                    status={todayStatus}
+                    onStatusChange={(newStatus) => {
+                        const newAttendance = { ...attendanceData, [todayKey]: newStatus };
+                        setAttendanceData(newAttendance);
+                        localStorage.setItem('attendanceData', JSON.stringify(newAttendance));
+                        if (user) saveStatusToSupabase(todayKey, newStatus, otData[todayKey]);
+                    }}
+                    t={t}
+                    layout="horizontal"
+                />
+              </div>
+
+              <div className="bg-card p-4 sm:p-6 rounded-lg border border-border shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-xl font-bold">{getMonthName()}</h3>
                 <div className="flex items-center gap-2">
@@ -720,7 +852,7 @@ export default function Home() {
                 })}
               </div>
 
-
+              </div>
 
               {/* Legend (Moved from sidebar) */}
               <div className="mt-4 sm:mt-6 bg-card p-3 sm:p-4 rounded-lg border border-border shadow-sm">
@@ -974,6 +1106,8 @@ export default function Home() {
           </div>
         </div>
       </main>
+      </div>
+      </div>
       {/* OT Duration Modal */}
       {showOtModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
@@ -1044,6 +1178,17 @@ export default function Home() {
         publicHolidays={publicHolidays}
         t={t}
         language={language}
+      />
+
+      {/* Schedule Modal */}
+      <ScheduleModal
+        isOpen={showScheduleModal}
+        onClose={() => setShowScheduleModal(false)}
+        date={currentScheduleDate}
+        schedules={schedules[`${currentScheduleDate.getFullYear()}-${String(currentScheduleDate.getMonth() + 1).padStart(2, '0')}-${String(currentScheduleDate.getDate()).padStart(2, '0')}`]}
+        userId={user?.id}
+        onScheduleChange={loadSchedules}
+        t={t}
       />
     </div>
   );
